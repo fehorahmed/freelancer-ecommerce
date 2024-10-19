@@ -27,16 +27,9 @@ class AdminController extends Controller
                 'message' => $validation->messages()->first(),
             ]);
         }
-        // if (Auth::attempt($credentials)) {
-        //     $token = $request->user()->createToken('user-access-token')->plainTextToken;
-        //     return response()->json(['token' => $token]);
-        // } else {
-        //     return response()->json(['message' => 'Unauthorized'], 401);
-        // }
-
         if (
-            !Auth::attempt(['email' => $request->email, 'password' => $request->password, 'role' => 3])
-            && !Auth::attempt(['phone' => $request->email, 'password' => $request->password, 'role' => 3])
+            !Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password,'status'=>1])
+            && !Auth::guard('admin')->attempt(['phone' => $request->email, 'password' => $request->password,'status'=>1])
         ) {
 
             return response([
@@ -44,10 +37,12 @@ class AdminController extends Controller
                 'message' => "Email or password dose not match.",
             ]);
         } else {
-            $token = $request->user()->createToken('admin-access-token', ['admin'])->plainTextToken;
+            // $token = $request->user()->createToken('admin-access-token', ['admin'])->plainTextToken;
+            $token = Auth::guard('admin')->user()->createToken('admin-access-token', ['admin'])->plainTextToken;
+
             return response()->json([
                 'status' => true,
-                'user' => new AdminResource($request->user()),
+                'user' => new AdminResource(Auth::guard('admin')->user()),
                 'token' => $token
             ]);
         }

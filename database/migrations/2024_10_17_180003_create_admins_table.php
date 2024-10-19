@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('phone')->unique();
             $table->string('type');
             $table->string('password');
+            $table->boolean('status')->default(1);
             $table->foreignId('created_by')->nullable();
             $table->foreign('created_by')->references('id')->on('admins');
             $table->unsignedBigInteger('updated_by')->nullable();

@@ -35,19 +35,6 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
 
 
 
-
-/*******************************
-Manager API
-******************************* */
-Route::post('manager/login', [ManagerController::class, 'apiLogin']);
-
-Route::middleware('auth:sanctum', 'ability:manager', 'throttle:1000,1')->group(function () {
-    Route::prefix('manager')->group(function () {
-        Route::get('profile', [AdminController::class, 'profile']);
-    });
-});
-
-
 /*******************************
 User API
 ******************************* */
@@ -60,6 +47,9 @@ Route::middleware('auth:sanctum', 'ability:user', 'throttle:1000,1')->group(func
     });
 });
 
+/*******************************
+Frontend API
+******************************* */
 
 /*******************************
 Common API
@@ -68,10 +58,5 @@ Route::prefix('common')->middleware('throttle:1000,1')->group(function () {
     Route::get('get-division', [DivisionController::class, 'apiGetDivision']);
     Route::get('get-district', [DistrictController::class, 'apiGetDistrict']);
     Route::get('get-sub-district', [SubDistrictController::class, 'apiGetSubDistrict']);
-
-
-
-    Route::get('get-hotels', [HotelController::class, 'apiGetHotels']);
-
 
 });
