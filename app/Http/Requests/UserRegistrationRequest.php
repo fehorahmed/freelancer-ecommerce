@@ -39,8 +39,8 @@ class UserRegistrationRequest extends FormRequest
             'email' => 'required|email|unique:users,email',
             'phone' => 'required|numeric|unique:users,phone',
             'password' => 'required|string|min:8|confirmed',
-            'gender' => 'required|string|max:255',
-            'date_of_birth' => 'required|date',
+            'gender' => 'nullable|string|max:255',
+            'date_of_birth' => 'nullable|date',
         ];
     }
 }

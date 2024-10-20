@@ -35,7 +35,6 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
         Route::group(['prefix' => 'products'], function () {
             Route::group(['prefix' => 'brands'], function () {
                 Route::get('/', [BrandController::class, 'index'])->name('products.brands.index');
-                Route::get('/create', [BrandController::class, 'create'])->name('products.brands.create');
                 Route::post('/create', [BrandController::class, 'store'])->name('products.brands.store');
                 Route::get('/{id}/edit', [BrandController::class, 'edit'])->name('products.brands.edit');
                 Route::post('/{id}/edit', [BrandController::class, 'update'])->name('products.brands.update');

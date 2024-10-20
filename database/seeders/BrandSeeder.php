@@ -19,7 +19,7 @@ class BrandSeeder extends Seeder
 
         ]);
         DB::table('brands')->insert([
-            'name' => 'Admin',
+            'name' => 'HP',
             'created_by' => 1
 
         ]);
