@@ -31,7 +31,6 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
     Route::prefix('admin')->group(function () {
         Route::get('profile', [AdminController::class, 'profile']);
 
-
         Route::group(['prefix' => 'products'], function () {
             Route::group(['prefix' => 'brands'], function () {
                 Route::get('/', [BrandController::class, 'index'])->name('products.brands.index');
@@ -39,7 +38,6 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
                 Route::get('/{id}/edit', [BrandController::class, 'edit'])->name('products.brands.edit');
                 Route::post('/{id}/edit', [BrandController::class, 'update'])->name('products.brands.update');
                 Route::delete('/{id}/delete', [BrandController::class, 'destroy'])->name('products.brands.delete');
-                Route::post('/brand-list', [BrandController::class, 'getBrandList'])->name('products.brands.list.autocomplete');
             });
         });
     });

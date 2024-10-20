@@ -48,7 +48,7 @@ class BrandController extends Controller
         $rules = [
             'name'=>'required|string|max:255|unique:brands,name',
             'description'=>'nullable|string|max:255',
-            'url'=>'nullable|string|max:255',
+            'url'=>'nullable|string|max:255|unique:brands,url',
             'logo'=>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:1024',
             'horizontal_banner'=>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:1024',
             'vertical_banner'=>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:1024',
@@ -70,7 +70,6 @@ class BrandController extends Controller
         $data->url = $request->url;
         $data->status = $request->status;
         if ($request->hasFile('logo')) {
-            // dd( $request->file('logo'));
             $file = $request->file('logo');
 
             $path = '\images\brands\logo';
@@ -86,8 +85,49 @@ class BrandController extends Controller
             $path1 = Storage::disk('public')->put($path . '\\' . $image_name, File::get($file));
             $path2 = Storage::disk('public')->put($dpath . '\\' . $image_name, (string)$resize_image->encode());
             $data->logo = $image_name;
-            $data->created_by = auth()->id();
+
         }
+
+        if ($request->hasFile('horizontal_banner')) {
+            $file = $request->file('horizontal_banner');
+
+            $path = '\images\brands\banner';
+            $dpath = '\images\brands\banner\mobile';
+
+            $image_name = time() . rand(00, 99) . '.' . $file->getClientOriginalName();
+
+            $resize_image = Image::make($file->getRealPath());
+            $resize_image->resize(250, 250, function ($constraint) {
+                $constraint->aspectRatio();
+            });
+
+            $path1 = Storage::disk('public')->put($path . '\\' . $image_name, File::get($file));
+            $path2 = Storage::disk('public')->put($dpath . '\\' . $image_name, (string)$resize_image->encode());
+            $data->horizontal_banner = $image_name;
+
+        }
+
+        if ($request->hasFile('vertical_banner')) {
+            $file = $request->file('vertical_banner');
+
+            $path = '\images\brands\banner';
+            $dpath = '\images\brands\banner\mobile';
+
+            $image_name = time() . rand(00, 99) . '.' . $file->getClientOriginalName();
+
+            $resize_image = Image::make($file->getRealPath());
+            $resize_image->resize(250, 250, function ($constraint) {
+                $constraint->aspectRatio();
+            });
+
+            $path1 = Storage::disk('public')->put($path . '\\' . $image_name, File::get($file));
+            $path2 = Storage::disk('public')->put($dpath . '\\' . $image_name, (string)$resize_image->encode());
+            $data->vertical_banner = $image_name;
+
+        }
+
+        $data->created_by = auth()->id();
+
         if($data->save()){
             return response()->json([
                 'status' => true,
@@ -114,9 +154,20 @@ class BrandController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Brand $brand)
+    public function edit( $id)
     {
-        //
+        $data = Brand::find($id);
+        if($data){
+            return response()->json([
+                'status' => true,
+                'data' => new BrandResource($data)
+            ]);
+        }else{
+            return response()->json([
+                'status' => false,
+                'message' => 'Brand not found.'
+            ]);
+        }
     }
 
     /**
