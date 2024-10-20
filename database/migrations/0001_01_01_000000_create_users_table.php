@@ -19,7 +19,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
-            $table->tinyInteger('gender')->nullable();
+            $table->tinyInteger('gender')->nullable()->comment('1=Male,2=Female,3=Other');
             $table->date('dob')->nullable();
             $table->string('picture')->nullable();
             $table->boolean('is_from_apps')->default(0);

@@ -39,25 +39,8 @@ class UserRegistrationRequest extends FormRequest
             'email' => 'required|email|unique:users,email',
             'phone' => 'required|numeric|unique:users,phone',
             'password' => 'required|string|min:8|confirmed',
-            'father_name' => 'required|string|max:255',
-            'job_type' => 'required|string|max:255',
-            'nid' => 'required|string|max:255',
-            'nid_image' => 'nullable|image|mimes:jpeg,jpg,png|max:1024',
-            'present_division_id' => 'required|numeric',
-            'present_district_id' => 'required|numeric',
-            'present_sub_district_id' => 'required|numeric',
-            'present_address' => 'required|string|max:255',
-
-            'permanent_division_id' => 'required|numeric',
-            'permanent_district_id' => 'required|numeric',
-            'permanent_sub_district_id' => 'required|numeric',
-            'permanent_address' => 'required|string|max:255',
-
-            'office_division_id' => 'nullable|required_if:job_type,GOVT|numeric',
-            'office_district_id' => 'nullable|required_if:job_type,GOVT|numeric',
-            'office_sub_district_id' => 'nullable|required_if:job_type,GOVT|numeric',
-            'office_address' => 'nullable|required_if:job_type,GOVT|string|max:255',
-
+            'gender' => 'required|string|max:255',
+            'date_of_birth' => 'required|date',
         ];
     }
 }

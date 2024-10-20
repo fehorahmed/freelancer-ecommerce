@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CommonController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\HotelController;
@@ -29,7 +30,6 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
     Route::prefix('admin')->group(function () {
         Route::get('profile', [AdminController::class, 'profile']);
 
-
     });
 });
 
@@ -38,8 +38,8 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
 /*******************************
 User API
 ******************************* */
-Route::post('user/login', [UserController::class, 'apiLogin']);
-Route::post('user/registration', [UserController::class, 'apiRegistration']);
+Route::post('login', [UserController::class, 'apiLogin']);
+Route::post('registration', [UserController::class, 'apiRegistration']);
 
 Route::middleware('auth:sanctum', 'ability:user', 'throttle:1000,1')->group(function () {
     Route::prefix('user')->group(function () {
@@ -54,6 +54,11 @@ Frontend API
 /*******************************
 Common API
 ******************************* */
+Route::middleware('auth:sanctum', 'throttle:1000,1')->group(function () {
+
+        Route::get('profile', [CommonController::class, 'profile']);
+
+});
 Route::prefix('common')->middleware('throttle:1000,1')->group(function () {
     Route::get('get-division', [DivisionController::class, 'apiGetDivision']);
     Route::get('get-district', [DistrictController::class, 'apiGetDistrict']);
