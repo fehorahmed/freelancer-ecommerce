@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\DivisionController;
@@ -47,6 +48,13 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
                 Route::post('/{id}/edit', [UnitController::class, 'update'])->name('products.units.update');
                 Route::delete('/{id}/delete', [UnitController::class, 'destroy'])->name('products.units.delete');
             });
+            Route::group(['prefix' => 'categories'], function () {
+                Route::get('/', [CategoryController::class, 'index'])->name('products.categories.index');
+                Route::post('/create', [CategoryController::class, 'store'])->name('products.categories.store');
+                Route::get('/{id}/edit', [CategoryController::class, 'edit'])->name('products.categories.edit');
+                Route::post('/{id}/edit', [CategoryController::class, 'update'])->name('products.categories.update');
+                Route::delete('/{id}/delete', [CategoryController::class, 'destroy'])->name('products.categories.delete');
+            });
         });
     });
 });
@@ -80,4 +88,8 @@ Route::prefix('common')->middleware('throttle:1000,1')->group(function () {
     Route::get('get-division', [DivisionController::class, 'apiGetDivision']);
     Route::get('get-district', [DistrictController::class, 'apiGetDistrict']);
     Route::get('get-sub-district', [SubDistrictController::class, 'apiGetSubDistrict']);
+
+
+    Route::get('get-active-categories', [CategoryController::class, 'getActiveCategories']);
+
 });
