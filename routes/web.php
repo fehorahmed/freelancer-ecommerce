@@ -33,6 +33,14 @@ Route::get('laravel-seed', function () {
     Artisan::call('db:seed',[]);
     return 'success';
 });
+Route::get('laravel-unit-seed', function () {
+    Artisan::call('db:seed --class=UnitSeeder',[]);
+    return 'success';
+});
+Route::get('laravel-brand-seed', function () {
+    Artisan::call('db:seed --class=BrandSeeder',[]);
+    return 'success';
+});
 
 Route::get('/clear-cache', function () {
     Artisan::call('cache:clear');
