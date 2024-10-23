@@ -9,6 +9,7 @@ use App\Http\Controllers\HotelController;
 use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\RoomCategoryController;
 use App\Http\Controllers\SubDistrictController;
+use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -38,6 +39,13 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
                 Route::get('/{id}/edit', [BrandController::class, 'edit'])->name('products.brands.edit');
                 Route::post('/{id}/edit', [BrandController::class, 'update'])->name('products.brands.update');
                 Route::delete('/{id}/delete', [BrandController::class, 'destroy'])->name('products.brands.delete');
+            });
+            Route::group(['prefix' => 'units'], function () {
+                Route::get('/', [UnitController::class, 'index'])->name('products.units.index');
+                Route::post('/create', [UnitController::class, 'store'])->name('products.units.store');
+                Route::get('/{id}/edit', [UnitController::class, 'edit'])->name('products.units.edit');
+                Route::post('/{id}/edit', [UnitController::class, 'update'])->name('products.units.update');
+                Route::delete('/{id}/delete', [UnitController::class, 'destroy'])->name('products.units.delete');
             });
         });
     });

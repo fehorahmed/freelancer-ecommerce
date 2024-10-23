@@ -137,7 +137,7 @@ class BrandController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Something went wrong.'
-            ]);
+            ],404);
         }
 
 
@@ -166,16 +166,116 @@ class BrandController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Brand not found.'
-            ]);
+            ],404);
         }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Brand $brand)
+    public function update(Request $request, $id)
     {
-        //
+        $rules = [
+            'name'=>'required|string|max:255|unique:brands,name,'.$id,
+            'description'=>'nullable|string|max:255',
+            'url'=>'nullable|string|max:255|unique:brands,url',
+            'logo'=>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:1024',
+            'horizontal_banner'=>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:1024',
+            'vertical_banner'=>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:1024',
+            'status'=>'required|boolean',
+        ];
+
+        $validation = Validator::make($request->all(),$rules);
+        if($validation->fails()){
+            return response()->json([
+                'status' => false,
+                'message' => $validation->errors()->first(),
+                'errors' => $validation->errors()
+            ],422);
+        }
+
+        $data =  Brand::find($id);
+        $data->name = $request->name;
+        $data->description = $request->description;
+        $data->url = $request->url;
+        $data->status = $request->status;
+        if ($request->hasFile('logo')) {
+            $file = $request->file('logo');
+
+            $path = '\images\brands\logo';
+            $dpath = '\images\brands\logo\150';
+
+            Storage::disk('public')->delete($path . '\\' . $data->logo);
+            Storage::disk('public')->delete($dpath . '\\' . $data->logo);
+
+            $image_name = time() . rand(00, 99) . '.' . $file->getClientOriginalName();
+
+            $resize_image = Image::make($file->getRealPath());
+            $resize_image->resize(150, 150, function ($constraint) {
+                $constraint->aspectRatio();
+            });
+
+            $path1 = Storage::disk('public')->put($path . '\\' . $image_name, File::get($file));
+            $path2 = Storage::disk('public')->put($dpath . '\\' . $image_name, (string)$resize_image->encode());
+            $data->logo = $image_name;
+
+        }
+
+        if ($request->hasFile('horizontal_banner')) {
+            $file = $request->file('horizontal_banner');
+
+            $path = '\images\brands\banner';
+            $dpath = '\images\brands\banner\mobile';
+            Storage::disk('public')->delete($path . '\\' . $data->horizontal_banner);
+            Storage::disk('public')->delete($dpath . '\\' . $data->horizontal_banner);
+
+            $image_name = time() . rand(00, 99) . '.' . $file->getClientOriginalName();
+
+            $resize_image = Image::make($file->getRealPath());
+            $resize_image->resize(250, 250, function ($constraint) {
+                $constraint->aspectRatio();
+            });
+
+            $path1 = Storage::disk('public')->put($path . '\\' . $image_name, File::get($file));
+            $path2 = Storage::disk('public')->put($dpath . '\\' . $image_name, (string)$resize_image->encode());
+            $data->horizontal_banner = $image_name;
+
+        }
+
+        if ($request->hasFile('vertical_banner')) {
+            $file = $request->file('vertical_banner');
+
+            $path = '\images\brands\banner';
+            $dpath = '\images\brands\banner\mobile';
+
+            Storage::disk('public')->delete($path . '\\' . $data->vertical_banner);
+            Storage::disk('public')->delete($dpath . '\\' . $data->vertical_banner);
+
+            $image_name = time() . rand(00, 99) . '.' . $file->getClientOriginalName();
+
+            $resize_image = Image::make($file->getRealPath());
+            $resize_image->resize(250, 250, function ($constraint) {
+                $constraint->aspectRatio();
+            });
+
+            $path1 = Storage::disk('public')->put($path . '\\' . $image_name, File::get($file));
+            $path2 = Storage::disk('public')->put($dpath . '\\' . $image_name, (string)$resize_image->encode());
+            $data->vertical_banner = $image_name;
+
+        }
+        $data->updated_by = auth()->id();
+
+        if($data->save()){
+            return response()->json([
+                'status' => true,
+                'message' => 'Brand updated successfully.'
+            ]);
+        }else{
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong.'
+            ],404);
+        }
     }
 
     /**

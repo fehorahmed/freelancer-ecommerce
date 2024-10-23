@@ -28,7 +28,7 @@ class UserController extends Controller
             return response([
                 'status' => false,
                 'message' => $validation->messages()->first(),
-            ]);
+            ],403);
         }
 
         if (
@@ -39,7 +39,7 @@ class UserController extends Controller
             return response([
                 'status' => false,
                 'message' => "Email or password dose not match.",
-            ]);
+            ],404);
         } else {
             $token = $request->user()->createToken('admin-access-token', ['user'])->plainTextToken;
             return response()->json([
@@ -79,7 +79,7 @@ class UserController extends Controller
             return response([
                 'status' => false,
                 'message' => 'Something went wrong..!',
-            ]);
+            ],500);
         }
     }
 }

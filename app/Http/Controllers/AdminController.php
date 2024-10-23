@@ -25,7 +25,7 @@ class AdminController extends Controller
             return response([
                 'status' => false,
                 'message' => $validation->messages()->first(),
-            ]);
+            ],403);
         }
         if (
             !Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password,'status'=>1])
@@ -35,7 +35,7 @@ class AdminController extends Controller
             return response([
                 'status' => false,
                 'message' => "Email or password dose not match.",
-            ]);
+            ],404);
         } else {
             // $token = $request->user()->createToken('admin-access-token', ['admin'])->plainTextToken;
             $token = Auth::guard('admin')->user()->createToken('admin-access-token', ['admin'])->plainTextToken;
