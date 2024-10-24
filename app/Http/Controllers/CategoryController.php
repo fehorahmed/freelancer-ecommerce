@@ -175,7 +175,7 @@ class CategoryController extends Controller
         } else {
             return response()->json([
                 'status' => false,
-                'message' => 'Brand not found.'
+                'message' => 'Category not found.'
             ], 404);
         }
     }
@@ -304,5 +304,28 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         //
+    }
+    public function getAllCategories()
+    {
+
+
+        // $srr = [
+        //     'safsdf',
+        //     array('sddsfds','ddddd'),
+        //     'dsfsssssss'
+        // ];
+        // return response()->json($srr);
+        $response = array();
+        $search = '';
+        // if ($request->has('term.term')) {
+        //     $search = $request->term['term'];
+        //     $data = Categories::getCategoryHierarchy2($search);
+        // }
+        // else{
+            $data = Category::getCategoryHierarchy2();
+        // }
+        $response= $data;
+
+        return response()->json($response);
     }
 }

@@ -117,7 +117,7 @@ class UnitController extends Controller
         }else{
             return response()->json([
                 'status' => false,
-                'message' => 'Brand not found.'
+                'message' => 'Unit not found.'
             ],404);
         }
     }

@@ -12,6 +12,7 @@ use App\Http\Controllers\RoomCategoryController;
 use App\Http\Controllers\SubDistrictController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WarrantyController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -55,6 +56,13 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
                 Route::post('/{id}/edit', [CategoryController::class, 'update'])->name('products.categories.update');
                 Route::delete('/{id}/delete', [CategoryController::class, 'destroy'])->name('products.categories.delete');
             });
+            Route::group(['prefix' => 'warranties'], function () {
+                Route::get('/', [WarrantyController::class, 'index'])->name('products.warranties.index');
+                Route::post('/create', [WarrantyController::class, 'store'])->name('products.warranties.store');
+                Route::get('/{id}/edit', [WarrantyController::class, 'edit'])->name('products.warranties.edit');
+                Route::post('/{id}/edit', [WarrantyController::class, 'update'])->name('products.warranties.update');
+                Route::delete('/{id}/delete', [WarrantyController::class, 'destroy'])->name('products.warranties.delete');
+            });
         });
     });
 });
@@ -91,5 +99,6 @@ Route::prefix('common')->middleware('throttle:1000,1')->group(function () {
 
 
     Route::get('get-active-categories', [CategoryController::class, 'getActiveCategories']);
+    Route::get('get-all-categories', [CategoryController::class, 'getAllCategories']);
 
 });
