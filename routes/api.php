@@ -63,6 +63,13 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
                 Route::post('/{id}/edit', [WarrantyController::class, 'update'])->name('products.warranties.update');
                 Route::delete('/{id}/delete', [WarrantyController::class, 'destroy'])->name('products.warranties.delete');
             });
+            Route::group(['prefix' => 'products'], function () {
+                Route::get('/', [WarrantyController::class, 'index'])->name('products.products.index');
+                Route::post('/create', [WarrantyController::class, 'store'])->name('products.products.store');
+                Route::get('/{id}/edit', [WarrantyController::class, 'edit'])->name('products.products.edit');
+                Route::post('/{id}/edit', [WarrantyController::class, 'update'])->name('products.products.update');
+                Route::delete('/{id}/delete', [WarrantyController::class, 'destroy'])->name('products.products.delete');
+            });
         });
     });
 });

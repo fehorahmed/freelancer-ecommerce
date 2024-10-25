@@ -74,3 +74,7 @@ Route::get('laravel-category-seed', function () {
     Artisan::call('db:seed --class=CategorySeeder',[]);
     return 'success';
 });
+Route::get('laravel-warranty-seed', function () {
+    Artisan::call('db:seed --class=WarrantySeeder',[]);
+    return 'success';
+});
