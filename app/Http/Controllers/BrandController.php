@@ -285,4 +285,8 @@ class BrandController extends Controller
     {
         //
     }
+    public function getActiveBrands()
+    {
+        return BrandResource::collection(Brand::where('status',1)->get());
+    }
 }

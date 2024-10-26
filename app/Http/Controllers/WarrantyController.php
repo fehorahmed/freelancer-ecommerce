@@ -142,4 +142,8 @@ class WarrantyController extends Controller
     {
         //
     }
+    public function getActiveWarranty()
+    {
+        return WarrantyResource::collection(Warranty::where('status',1)->get());
+    }
 }

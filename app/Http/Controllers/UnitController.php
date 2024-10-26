@@ -192,4 +192,8 @@ class UnitController extends Controller
     {
         //
     }
+    public function getActiveUnits()
+    {
+        return UnitResource::collection(Unit::where('status',1)->get());
+    }
 }

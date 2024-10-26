@@ -171,10 +171,10 @@ class Category extends Model
                 $i++;
                 $data['id'] = $v->id;
                 $data['name'] = $v->name;
-                $data['logo'] = $v->logo;
+                $data['logo'] = $v->logo ? asset('/') . 'storage/images/categories/logo/150/' . $v->logo : null;
                 $data['url'] = $v->url;
-                $data['horizontal_banner'] = $v->horizontal_banner;
-                $data['vertical_banner'] = $v->vertical_banner;
+                $data['horizontal_banner'] =$v->horizontal_banner ? asset('/') . 'storage/images/categories/banner/mobile/' . $v->horizontal_banner : null;
+                $data['vertical_banner'] = $v->vertical_banner ? asset('/') . 'storage/images/categories/banner/mobile/' . $v->vertical_banner : null;
 
                 if(Category::hasChildren($v->id))
                 {
@@ -210,10 +210,9 @@ class Category extends Model
                 $data['id'] = $v->id;
                 $data['name'] = $v->name;
                 $data['url'] = $v->url;
-                                 $data['logo'] = $v->logo;
-
-                $data['horizontal_banner'] = $v->horizontal_banner;
-                $data['vertical_banner'] = $v->vertical_banner;
+                $data['logo'] = $v->logo ? asset('/') . 'storage/images/categories/logo/150/' . $v->logo : null;
+                $data['horizontal_banner'] =$v->horizontal_banner ? asset('/') . 'storage/images/categories/banner/mobile/' . $v->horizontal_banner : null;
+                $data['vertical_banner'] = $v->vertical_banner ? asset('/') . 'storage/images/categories/banner/mobile/' . $v->vertical_banner : null;
 
                 if(Category::hasChildren($v->id))
                 {

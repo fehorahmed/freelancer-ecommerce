@@ -120,5 +120,8 @@ Route::prefix('common')->middleware('throttle:1000,1')->group(function () {
 
 
     Route::get('get-all-categories', [CategoryController::class, 'getAllCategories']);
+    Route::get('get-active-brands', [BrandController::class, 'getActiveBrands']);
+    Route::get('get-active-units', [UnitController::class, 'getActiveUnits']);
+    Route::get('get-active-warranty', [WarrantyController::class, 'getActiveWarranty']);
 
 });
