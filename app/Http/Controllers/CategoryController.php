@@ -148,11 +148,6 @@ class CategoryController extends Controller
     }
 
 
-    public function getActiveCategories()
-    {
-        return CategoryResource::collection(Category::where('status', 1)->get());
-    }
-
     /**
      * Display the specified resource.
      */
@@ -309,23 +304,14 @@ class CategoryController extends Controller
     {
 
 
-        // $srr = [
-        //     'safsdf',
-        //     array('sddsfds','ddddd'),
-        //     'dsfsssssss'
-        // ];
-        // return response()->json($srr);
-        $response = array();
-        $search = '';
-        // if ($request->has('term.term')) {
-        //     $search = $request->term['term'];
-        //     $data = Categories::getCategoryHierarchy2($search);
-        // }
-        // else{
-            $data = Category::getCategoryHierarchy2();
-        // }
-        $response= $data;
+        $data = Category::getCategoryHierarchyAR();
+        return response()->json(array('status' =>true, 'data' => $data));
 
-        return response()->json($response);
+    }
+    public function getAllCategoryForAdmin()
+    {
+        $data = Category::getCategoryHierarchyForAdmin();
+        return response()->json(array('status' =>true, 'data' => $data));
+
     }
 }

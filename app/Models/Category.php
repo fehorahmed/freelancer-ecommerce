@@ -115,4 +115,123 @@ class Category extends Model
         }
         return false;
     }
+
+    public static function getCategoryHierarchyAR()
+    {
+        $a = Category::getParentCategories();
+        $str = "&nbsp;";
+        $self = new static;
+        $child = [];
+        $data = [];
+        if(count($a)>0)
+        {
+            $i = 0;
+            foreach($a as $v)
+            {
+                $i++;
+                $data['id'] = $v->id;
+                $data['name'] = $v->name;
+                $data['logo'] = $v->logo;
+                $data['url'] = $v->url;
+                $data['horizontal_banner'] = $v->horizontal_banner;
+                $data['vertical_banner'] = $v->vertical_banner;
+
+                if(Category::hasChildren($v->id))
+                {
+                    $child = Category::getChildrenAR($v->id);
+                    $data['child'] = $child;
+                    /*if (is_array($child))
+                    {
+                        for ($i = 0; $i < count($child); $i++) {
+                            array_push($self->catHierarchy, $child[$i]);
+                        }
+                    }*/
+                }
+                else
+                {
+                    $data['child'] = [];
+                }
+                array_push($self->catHierarchy, $data);
+            }
+            return $self->catHierarchy;
+        }
+    }
+    public static function getCategoryHierarchyForAdmin()
+    {
+        $a = Category::where('id',1)->get();
+        $str = "&nbsp;";
+        $self = new static;
+        $child = [];
+        $data = [];
+        if(count($a)>0)
+        {
+            $i = 0;
+            foreach($a as $v)
+            {
+                $i++;
+                $data['id'] = $v->id;
+                $data['name'] = $v->name;
+                $data['logo'] = $v->logo;
+                $data['url'] = $v->url;
+                $data['horizontal_banner'] = $v->horizontal_banner;
+                $data['vertical_banner'] = $v->vertical_banner;
+
+                if(Category::hasChildren($v->id))
+                {
+                    $child = Category::getChildrenAR($v->id);
+                    $data['child'] = $child;
+                    /*if (is_array($child))
+                    {
+                        for ($i = 0; $i < count($child); $i++) {
+                            array_push($self->catHierarchy, $child[$i]);
+                        }
+                    }*/
+                }
+                else
+                {
+                    $data['child'] = [];
+                }
+                array_push($self->catHierarchy, $data);
+            }
+            return $self->catHierarchy;
+        }
+    }
+
+    public static function getChildrenAR($id)
+    {
+        $categories = Category::where('root_id','=',$id)->get();
+        $value = [];
+        $data = [];
+        $child = [];
+        if(count($categories)>0)
+        {
+            foreach($categories as $v)
+            {
+                $data['id'] = $v->id;
+                $data['name'] = $v->name;
+                $data['url'] = $v->url;
+                                 $data['logo'] = $v->logo;
+
+                $data['horizontal_banner'] = $v->horizontal_banner;
+                $data['vertical_banner'] = $v->vertical_banner;
+
+                if(Category::hasChildren($v->id))
+                {
+                    $child = Category::getChildrenAR($v->id);
+                    $data['child'] = $child;
+                    /*if (is_array($child)) {
+                        for($i=0;$i<count($child);$i++) {
+                            array_push($value, $child[$i]);
+                        }
+                    }*/
+                }
+                else
+                {
+                    $data['child'] = [];
+                }
+                array_push($value, $data);
+            }
+            return $value;
+        }
+    }
 }
