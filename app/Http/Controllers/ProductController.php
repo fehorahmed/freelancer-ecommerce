@@ -61,7 +61,7 @@ class ProductController extends Controller
             'brand' => 'nullable|numeric',
             'category' => 'required|numeric',
             'unit' => 'required|numeric',
-            // 'product' => 'required',
+            'stock' => 'required|numeric',
             'image' => 'required|mimes:jpg,jpeg,png,webp,gif|max:2000',
             'status' => 'required|boolean',
             'meta_title' => 'nullable|string|max:255',
