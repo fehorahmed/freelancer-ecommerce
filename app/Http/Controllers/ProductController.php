@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Models\ProductInventory;
 use App\Models\ProductPrice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -63,6 +64,10 @@ class ProductController extends Controller
             // 'product' => 'required',
             'image' => 'required|mimes:jpg,jpeg,png,webp,gif|max:2000',
             'status' => 'required|boolean',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string|max:2000',
+            'meta_keywords' => 'nullable|string|max:2000',
+            'meta_og_description' => 'nullable|string|max:2000',
         ];
 
         $validation = Validator::make($request->all(), $rules);
@@ -97,6 +102,11 @@ class ProductController extends Controller
             $product->short_description = $request->short_description;
             $product->description = $request->description;
             $product->status = $request->status;
+
+            $product->meta_title = $request->meta_title;
+            $product->meta_description = $request->meta_description;
+            $product->meta_keywords = $request->meta_keywords;
+            $product->meta_og_description = $request->meta_og_description;
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
 
@@ -122,9 +132,6 @@ class ProductController extends Controller
             if ($product->save()) {
                 $productId = $product->id;
                 $i = 0;
-
-
-
                 if ($request->hasFile("gallery")) {
                     $gfiles = $request->file('gallery');
                     foreach ($gfiles as $file) {
@@ -160,6 +167,19 @@ class ProductController extends Controller
                 $proPrice->created_by = auth()->id();
 
                 if (!$proPrice->save()) {
+                    $transactionFail = true;
+                }
+                // Stock Update
+                $proInv = new ProductInventory();
+                $proInv->product_id = $productId;
+                // $proInv->product_attribute_id = $productAttId;
+                $proInv->stock_in = $request->stock;
+                $proInv->stock_out = 0;
+                $proInv->ref_type = ProductInventory::NEW_PRODUCT;
+                $proInv->reference = 'Add New Product';
+                $proInv->date = date("Y-m-d");
+                $proInv->created_by = auth()->id();
+                if (!$proInv->save()) {
                     $transactionFail = true;
                 }
 
@@ -500,7 +520,7 @@ class ProductController extends Controller
                     }
                 }
                 // $PriDeactivated
-                ProductPrice::where('status', '=', 1)->where('product_id', '=', $id)->update(['status' => 0, 'updated_by'=>auth()->id()]);
+                ProductPrice::where('status', '=', 1)->where('product_id', '=', $id)->update(['status' => 0, 'updated_by' => auth()->id()]);
                 $proPrice = new ProductPrice();
                 $proPrice->product_id = $productId;
                 // $proPrice->product_attribute_id = $productAttId;
