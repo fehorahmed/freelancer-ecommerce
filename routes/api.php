@@ -71,13 +71,13 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
                 Route::post('/create', [ProductController::class, 'store'])->name('products.product.store');
                 Route::get('/{id}/edit', [ProductController::class, 'edit'])->name('products.product.edit');
                 Route::post('/{id}/edit', [ProductController::class, 'update'])->name('products.product.update');
-                Route::delete('/{id}/delete', [ProductController::class, 'destroy'])->name('products.product.delete');
-                Route::post('/products-list', [ProductController::class, 'getProductsList'])->name('products.product.list');
+                Route::post('/stock-edit',[ProductController::class, 'stockEditByProduct'])->name('products.product.stock-edit');
 
+                // Route::delete('/{id}/delete', [ProductController::class, 'destroy'])->name('products.product.delete');
+                // Route::post('/products-list', [ProductController::class, 'getProductsList'])->name('products.product.list');
                 Route::get('/{id}/active', [ProductController::class, 'productActivate'])->name('products.product.active');
                 Route::get('/{id}/deactive', [ProductController::class, 'productDeActivate'])->name('products.product.deactive');
 
-                Route::post('/stock-edit',[ProductController::class, 'stockEdit'])->name('products.stock.edit');
                 Route::post('/stock-update',[ProductsInventoriesController::class, 'ajaxStockEdit'])->name('products.stock.update');
 
                 //CK upload
@@ -123,5 +123,7 @@ Route::prefix('common')->middleware('throttle:1000,1')->group(function () {
     Route::get('get-active-brands', [BrandController::class, 'getActiveBrands']);
     Route::get('get-active-units', [UnitController::class, 'getActiveUnits']);
     Route::get('get-active-warranty', [WarrantyController::class, 'getActiveWarranty']);
+    //Get Product Stock
+    Route::get('product/{id}/stock',[ProductController::class, 'getStockByProduct'])->name('products.product.get-stock');
 
 });

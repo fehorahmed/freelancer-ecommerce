@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\ProductImage;
+use App\Models\ProductInventory;
 use App\Models\ProductPrice;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -37,6 +38,7 @@ class ProductResource extends JsonResource
             "is_apps_only" => $this->is_apps_only,
             "type" => $this->type,
             "status" => $this->status,
+            'stock' => ProductInventory::getStock($this->id,null),
             // "price" => new ProductPriceResource($this->productPrice),
             'regular_price' => ProductPrice::getRegulerPrice($this->id,''),
             'sell_price' => ProductPrice::getSalePrice($this->id,''),

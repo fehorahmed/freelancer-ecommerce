@@ -8,6 +8,7 @@ use App\Models\ProductImage;
 use App\Models\ProductInventory;
 use App\Models\ProductPrice;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -563,5 +564,73 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         //
+    }
+    public function getStockByProduct($id)
+    {
+        $data = Product::find($id);
+        if ($data) {
+            $stock =  ProductInventory::getStock($data->id, null);
+            return response([
+                'status' => true,
+                'stock' => $stock
+            ]);
+        } else {
+            return response([
+                'status' => false,
+                'message' => 'Product not found.'
+            ], 404);
+        }
+    }
+    public function stockEditByProduct(Request $request)
+    {
+
+        $rules = [
+            'product_id' => 'required|numeric',
+            'stock_in' => 'required|numeric',
+            'stock_out' => 'required|numeric',
+        ];
+
+        $validation = Validator::make($request->all(), $rules);
+        if ($validation->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validation->errors()->first(),
+                'errors' => $validation->errors()
+            ], 422);
+        }
+
+        $data = Product::find($request->product_id);
+        if (!$data) {
+            return response([
+                'status' => false,
+                'message' => 'Product not found.'
+            ], 404);
+            // $stock =  ProductInventory::getStock($data->id, null);
+            // return response([
+            //     'status' => true,
+            //     'stock' => $stock
+            // ]);
+        }
+        $proInv = new ProductInventory();
+        $proInv->product_id = $request->product_id;
+        // $proInv->product_attribute_id = $attribute_id;
+        $proInv->stock_in = (int)$request->stock_in;
+        $proInv->stock_out = (int)$request->stock_out;
+        $proInv->ref_type = ProductInventory::UPDATE_PRODUCT;
+        $proInv->reference = 'Product Stock Quick Edit';
+        $proInv->date = date('Y-m-d');
+        $proInv->created_by = Auth::user()->id;
+        if ($proInv->save()) {
+            return response([
+                'status' => true,
+                'message' => 'Product stock updated.'
+            ]);
+        } else {
+            return response([
+                'status' => false,
+                'message' => 'Something went wrong.'
+            ], 404);
+        }
+
     }
 }
