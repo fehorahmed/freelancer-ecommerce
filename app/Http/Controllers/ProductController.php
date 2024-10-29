@@ -429,6 +429,11 @@ class ProductController extends Controller
             'unit' => 'required|numeric',
             'image' => 'nullable|mimes:jpg,jpeg,png,webp,gif|max:2000',
             'status' => 'required|boolean',
+
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string|max:2000',
+            'meta_keywords' => 'nullable|string|max:2000',
+            'meta_og_description' => 'nullable|string|max:2000',
         ];
 
         $validation = Validator::make($request->all(), $rules);
@@ -464,6 +469,12 @@ class ProductController extends Controller
             $product->short_description = $request->short_description;
             $product->description = $request->description;
             $product->status = $request->status;
+
+            $product->meta_title = $request->meta_title;
+            $product->meta_description = $request->meta_description;
+            $product->meta_keywords = $request->meta_keywords;
+            $product->meta_og_description = $request->meta_og_description;
+
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
 
