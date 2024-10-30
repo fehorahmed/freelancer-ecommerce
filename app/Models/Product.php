@@ -25,4 +25,5 @@ class Product extends Model
     public function warranty(){
         return $this->belongsTo(Warranty::class);
     }
+
 }

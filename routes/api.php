@@ -106,6 +106,15 @@ Route::middleware('auth:sanctum', 'ability:user', 'throttle:1000,1')->group(func
 Frontend API
  ******************************* */
 
+ Route::group(['middleware' => 'throttle:999000,1'], function () {
+    Route::get('all-products', [ProductController::class, 'getAllProductsForWeb'])->name('api.all.products.web');
+    Route::post('product-single', [ProductController::class, 'getProductByUrl'])->name('api.single.products');
+    Route::post('category-products', [ProductController::class, 'getProductsByCategory'])->name('api.category.products');
+    Route::post('brand-products', [ProductController::class, 'getProductsByBrand'])->name('api.brand.products');
+ });
+
+
+
 /*******************************
 Common API
  ******************************* */

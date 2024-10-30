@@ -233,4 +233,31 @@ class Category extends Model
             return $value;
         }
     }
+
+    public static function getChildrenCategory($id)
+    {
+        $categories = Category::where('root_id','=',$id)->get();
+        $value = [];
+        $child = [];
+        $opt = [];
+        if(count($categories)>0)
+        {
+            foreach($categories as $v)
+            {
+                $opt = $v->id;
+                array_push($value, $opt);
+
+                if(Category::hasChildren($v->id))
+                {
+                    $child = Category::getChildrenCategory($v->id);
+                    if (is_array($child)) {
+                        for($i=0;$i<count($child);$i++) {
+                            array_push($value, $child[$i]);
+                        }
+                    }
+                }
+            }
+            return $value;
+        }
+    }
 }

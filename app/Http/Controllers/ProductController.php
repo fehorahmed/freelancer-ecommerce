@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\MultiProductResource;
 use App\Http\Resources\ProductResource;
+use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductInventory;
 use App\Models\ProductPrice;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -642,6 +646,156 @@ class ProductController extends Controller
                 'message' => 'Something went wrong.'
             ], 404);
         }
+    }
+    public function getAllProductsForWeb(Request $request)
+    {
+        $rules = [
+            'name' => 'nullable|string',
+            'min_price' => 'nullable|numeric',
+            'max_price' => 'nullable|numeric',
+        ];
 
+        $validation = Validator::make($request->all(), $rules);
+        if ($validation->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validation->errors()->first(),
+                'errors' => $validation->errors()
+            ], 422);
+        }
+        if ($request->per_page) {
+            $perPage = $request->per_page;
+        } else {
+            $perPage = 20;
+        }
+        $query = Product::query();
+        if ($request->search) {
+            $query->where('name', 'LIKE', "%{$request->search}%");
+        }
+
+        if (isset($request->min_price) && isset($request->max_price)) {
+            $data = $query->whereHas('productPrice', function (Builder $query) use ($request) {
+                $query->whereBetween('sell_price', [$request->min_price, $request->max_price]);
+            });
+        }
+
+
+        return MultiProductResource::collection($query->where('status', '=', 1)->paginate($perPage));
+    }
+
+    public function getProductByUrl(Request $request)
+    {
+
+        $rules = [
+            'url' => 'required|string',
+        ];
+
+        $validation = Validator::make($request->all(), $rules);
+        if ($validation->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validation->errors()->first(),
+                'errors' => $validation->errors()
+            ], 422);
+        }
+        $data = Product::where('url', '=', $request->url)->where('status', '=', 1)->first();
+        if ($data) {
+            return new ProductResource($data);
+        } else {
+            return response(['status' => false, 'message' => 'Product Not Found!'], 404);
+        }
+    }
+
+    public function getProductsByCategory(Request $request)
+    {
+
+        $rules = [
+            'url' => 'required|string',
+            'min_price' => 'nullable|numeric',
+            'max_price' => 'nullable|numeric',
+        ];
+
+        $validation = Validator::make($request->all(), $rules);
+        if ($validation->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validation->errors()->first(),
+                'errors' => $validation->errors()
+            ], 422);
+        }
+
+        if (isset($request->url)) {
+            $category = Category::where('url', '=', $request->url)->first();
+            $childCategory = Category::getChildrenCategory($category->id);
+            if(is_array($childCategory)){
+                array_push($childCategory,$category->id);
+            }else{
+                $childCategory = [$category->id];
+            }
+
+           // dd($childCategory);
+            $data = Product::select('id', 'name', 'url', 'sku', 'type', 'brand_id', 'unit_id','category_id', 'is_featured', 'image', 'created_at', 'updated_at')
+                ->whereIn('category_id',$childCategory)->where('status',1);
+
+            if (isset($request->min_price) && isset($request->max_price)) {
+                $data = $data->whereHas('productPrice', function (Builder $query) use ($request) {
+                    $query->whereBetween('sell_price', [$request->min_price, $request->max_price]);
+                });
+            }
+           // $data = $data->where('status', '=', 1)->where('is_apps_only', '=', 0);
+            $data = $data->get();
+
+            return MultiProductResource::collection($data);
+        }
+    }
+
+    public function getProductsByBrand(Request $request)
+    {
+        $rules = [
+            'name' => 'required|string',
+        ];
+
+        $validation = Validator::make($request->all(), $rules);
+        if ($validation->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validation->errors()->first(),
+                'errors' => $validation->errors()
+            ], 422);
+        }
+
+        if (isset($request->name)) {
+            $brand = Brand::where('name', '=', $request->name)->first();
+            if(!$brand){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Brand not found.'
+
+                ], 404);
+            }
+            $data = Product::where('brand_id',$brand->id);
+
+            // if (isset($request->category)) {
+            //     $category = Categories::where('url', '=', $request->category)->first();
+            //     $childCategory = Categories::getChildrenCategory($category->id);
+            //     $data = $data->whereHas('products_categories', function (Builder $query) use ($category, $childCategory) {
+            //         $query->where('category_id', '=', $category->id);
+            //         if (isset($childCategory)) {
+            //             foreach ($childCategory as $chdCat) {
+            //                 $query->orWhere('category_id', '=', $chdCat["id"]);
+            //             }
+            //         }
+            //     });
+            // }
+            if (isset($request->min_price) && isset($request->max_price)) {
+                $data = $data->whereHas('productPrice', function (Builder $query) use ($request) {
+                    $query->whereBetween('sell_price', [$request->min_price, $request->max_price]);
+                });
+            }
+            $data = $data->where('status', '=', 1);
+            $data = $data->get();
+
+            return MultiProductResource::collection($data);
+        }
     }
 }
