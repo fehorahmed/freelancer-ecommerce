@@ -12,6 +12,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RoomCategoryController;
 use App\Http\Controllers\SubDistrictController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\UserAddressController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WarrantyController;
 use Illuminate\Http\Request;
@@ -99,6 +100,11 @@ Route::post('registration', [UserController::class, 'apiRegistration']);
 Route::middleware('auth:sanctum', 'ability:user', 'throttle:1000,1')->group(function () {
     Route::prefix('user')->group(function () {
         Route::get('profile', [AdminController::class, 'profile']);
+        Route::post('save-address', [UserAddressController::class, 'store'])->name('api.address.save');
+        Route::get('get-address', [UserAddressController::class, 'getAllAddress'])->name('api.address.all');
+
+
+
     });
 });
 
