@@ -26,4 +26,10 @@ class Product extends Model
         return $this->belongsTo(Warranty::class);
     }
 
+    public static function getProductName($id)
+    {
+        $data = Product::find($id);
+        return $data ? $data->name : 'N/A';
+    }
+
 }

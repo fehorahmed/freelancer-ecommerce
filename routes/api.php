@@ -8,6 +8,7 @@ use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\ManagerController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RoomCategoryController;
 use App\Http\Controllers\SubDistrictController;
@@ -102,9 +103,8 @@ Route::middleware('auth:sanctum', 'ability:user', 'throttle:1000,1')->group(func
         Route::get('profile', [AdminController::class, 'profile']);
         Route::post('save-address', [UserAddressController::class, 'store'])->name('api.address.save');
         Route::get('get-address', [UserAddressController::class, 'getAllAddress'])->name('api.address.all');
-
-
-
+        Route::post('delete-address', [UserAddressController::class, 'deleteAddress'])->name('api.address.delete');
+        Route::post('place-order', [OrderController::class, 'postOrder'])->name('api.order.place');
     });
 });
 

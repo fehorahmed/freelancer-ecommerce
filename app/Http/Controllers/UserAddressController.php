@@ -74,8 +74,40 @@ class UserAddressController extends Controller
 
     public function getAllAddress()
     {
-        $user=Auth::user()->id;
-        return UserAddressResource::collection(UserAddress::where('user_id','=',$user)->get());
+        $user = Auth::user()->id;
+        return UserAddressResource::collection(UserAddress::where('user_id', '=', $user)->get());
+    }
+
+    public function deleteAddress(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'address_id' => "required|numeric",
+        ]);
+        if ($validator->fails()) {
+            return response([
+                'status' => false,
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+        $data = UserAddress::find($request->address_id);
+        if(!$data){
+            return response([
+                'status' => false,
+                'message' => 'Address not found.',
+            ], 422);
+        }
+        if ($data->delete()) {
+            return response([
+                'status' => true,
+                'message' => 'Delete Success.',
+            ]);
+        } else {
+            return response([
+                'status' => false,
+                'message' => 'Something went wrong.',
+            ], 422);
+        }
     }
 
     /**
