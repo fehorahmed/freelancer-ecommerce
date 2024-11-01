@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use App\Models\OrderDetail;
+use App\Models\OrderStatus;
+use App\Models\PaymentDetail;
 use App\Models\Product;
 use App\Models\ProductInventory;
 use App\Models\UserAddress;
@@ -19,9 +22,18 @@ class OrderController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if ($request->per_page) {
+            $perPage = $request->per_page;
+        } else {
+            $perPage = 10;
+        }
+        $query = Order::query();
+        if($request->search){
+            $query->where('order_no','LIKE',"%{$request->search}%");
+        }
+        return OrderResource::collection($query->paginate($perPage));
     }
 
     /**
@@ -78,23 +90,24 @@ class OrderController extends Controller
         $validator = Validator::make($request->all(), [
             'address_id' => "required|numeric",
             'shipping_charge' => "required|numeric",
-            'totalAmount' => "required",
-            'paymentType' => "required",
+            'total_amount' => "required",
+            'discount' => "nullable|numeric",
+            'payment_type' => "required",
             'products' => 'required|array',
-            'products.id' => 'required|numeric',
-            'products.quantity' => 'required|numeric',
-            'products.sale_price' => 'required|numeric',
+            'products.*.id' => 'required|numeric',
+            'products.*.quantity' => 'required|numeric',
+            'products.*.sale_price' => 'required|numeric',
         ]);
 
 
         if ($validator->fails()) {
             return response()->json([
-                'success' => false,
+                'status' => false,
                 'message' => $validator->errors()->first(),
                 'errors' => $validator->errors(),
             ], 422);
         }
-
+        // dd($request->all());
         foreach ($request->products as $product) {
             if ($product['id'] > 0) {
                 $pid = $product['id'];
@@ -106,12 +119,12 @@ class OrderController extends Controller
 
                     if ($stock > 0) {
                         return response([
-                            'success' => false,
+                            'status' => false,
                             'message' => $pName . ' Quantity is grater then Stock! Please decrease quantity.',
                         ], 404);
                     } else {
                         return response([
-                            'success' => false,
+                            'status' => false,
                             'message' => $pName . ' is not available in Stock! Please remove product.',
                         ], 404);
                     }
@@ -123,11 +136,11 @@ class OrderController extends Controller
         foreach ($request->products as $product) {
             $sale_price  +=  $product['sale_price'] * $product['quantity'];
         }
-        if ((float)$sale_price !=  (float)$request->totalAmount) {
+        if ((float)$sale_price !=  (float)$request->total_amount) {
             return response([
-                'success' => false,
+                'status' => false,
                 'message' => 'Price is not match!',
-            ],404);
+            ], 404);
         }
 
         try {
@@ -144,7 +157,7 @@ class OrderController extends Controller
             $order->shipping_charge = ceil($request->shipping_charge);
             $order->discount = $request->discount ? $request->discount : 0;
             $order->coupon_code = $request->coupon_code ?? null;
-            $order->total_amount = (float)$total = (($request->totalAmount + $order->shipping_charge) - $order->discount);
+            $order->total_amount = (float)$total = (($request->total_amount + $order->shipping_charge) - $order->discount);
             $order->created_by = $userId;
             $order->user_address_id = $request->address_id;
 
@@ -158,7 +171,7 @@ class OrderController extends Controller
                     if ($product['id'] != 0) {
                         $orderDetails = new OrderDetail();
                         $orderDetails->order_id = $orderId;
-                        $orderDetails->order_no = $orderNo;
+                        // $orderDetails->order_no = $orderNo;
                         $orderDetails->product_id = $product['id'];
                         // $orderDetails->attribute_id = $product['productAttrId'];
                         $orderDetails->discount_type = '';
@@ -195,8 +208,7 @@ class OrderController extends Controller
 
                 $orderStatus = new OrderStatus();
                 $orderStatus->order_id = $orderId;
-                $orderStatus->order_no = $orderNo;
-                $orderStatus->status_id = Status::PENDING;
+                $orderStatus->status = OrderStatus::PENDING;
                 $orderStatus->remarks = "Order Submitted by Consumer";
                 $orderStatus->date = $date = date("Y-m-d H:i:s");
                 $orderStatus->updated_by = null;
@@ -204,27 +216,26 @@ class OrderController extends Controller
                     $isTransectionFail = true;
                 }
 
-                $paymentDetails = new PaymentDetails();
+                $paymentDetails = new PaymentDetail();
                 $paymentDetails->order_id = $orderId;
-                $paymentDetails->order_no = $orderNo;
-                $paymentDetails->user_id = $userId;
-                if ($request->paymentType == 'COD') {
-                    $paymentDetails->payment_type = PaymentDetails::CASH_ON_DELIVERY;
+                // $paymentDetails->order_no = $orderNo;
+                // $paymentDetails->user_id = $userId;
+                if ($request->payment_type == 'COD') {
+                    $paymentDetails->payment_type = PaymentDetail::CASH_ON_DELIVERY;
                     $paymentDetails->transaction_no = "";
                 }
-                if ($request->paymentType == 'BKASH') {
-                    $paymentDetails->payment_type = PaymentDetails::BKASH;
+                if ($request->payment_type == 'BKASH') {
+                    $paymentDetails->payment_type = PaymentDetail::BKASH;
                     $paymentDetails->transaction_no = "";
                 }
-                if ($request->paymentType == 'NAGAD') {
-                    $paymentDetails->payment_type = PaymentDetails::NAGAD;
+                if ($request->payment_type == 'NAGAD') {
+                    $paymentDetails->payment_type = PaymentDetail::NAGAD;
                     $paymentDetails->transaction_no = "";
                 }
-                if ($request->paymentType == 'SSL') {
-                    $paymentDetails->payment_type = PaymentDetails::SSL_COMMERZ;
+                if ($request->payment_type == 'SSL') {
+                    $paymentDetails->payment_type = PaymentDetail::SSL_COMMERZ;
                     $paymentDetails->transaction_no = "";
                 }
-
 
                 if (!$paymentDetails->save()) {
                     $isTransectionFail = true;
@@ -234,28 +245,27 @@ class OrderController extends Controller
                 if ($isTransectionFail) {
                     DB::rollBack();
                     return response()->json([
-                        'success' => false,
-                        'status_code' => 200,
+                        'status' => false,
                         'message' => 'Error occurred while creating Order!',
-                    ]);
+                    ],404);
                 } else {
                     DB::commit();
 
-                    $url = "http://66.45.237.70/maskingapi.php";
-                    $number = $phoneNo;
-                    $text = "Dear Customer,
-Your order placed successfully.your order number is " . $orderNo;
-                    $data = array(
-                        'username' => "motionview",
-                        'password' => "ASDFG12345",
-                        'senderid' => "Motion View",
-                        'number' => "$number",
-                        'message' => "$text"
-                    );
+                    //                     $url = "http://66.45.237.70/maskingapi.php";
+                    //                     $number = $phoneNo;
+                    //                     $text = "Dear Customer,
+                    // Your order placed successfully.your order number is " . $orderNo;
+                    //                     $data = array(
+                    //                         'username' => "motionview",
+                    //                         'password' => "ASDFG12345",
+                    //                         'senderid' => "Motion View",
+                    //                         'number' => "$number",
+                    //                         'message' => "$text"
+                    //                     );
 
-                    $smsResponse = Http::asForm()->post($url, $data);
+                    //                     $smsResponse = Http::asForm()->post($url, $data);
 
-                    $mailTo = Auth::user() ? Auth::user()->email : '';
+                    //                     $mailTo = Auth::user() ? Auth::user()->email : '';
                     // $cc = 'miyad.mh@gmail.com';
                     // $bcc = 'miyad.mh@gmail.com';
                     // $mailInfo = new \stdClass();
@@ -271,29 +281,32 @@ Your order placed successfully.your order number is " . $orderNo;
                     // $mailResponse = $this->send($mailInfo, $mailTo, $cc, $bcc, $orderNo);
 
                     return response()->json([
-                        'success' => true,
-                        'status_code' => 200,
+                        'status' => true,
                         'order_no' => $orderNo,
                         'amount' => $total,
-                        'name' => $cus_name,
-                        'phone' => $phoneNo,
-                        'address' => $cus_address,
-                        'email' => $mailTo,
+                        // 'name' => $cus_name,
+                        // 'phone' => $phoneNo,
+                        // 'address' => $cus_address,
+                        // 'email' => $mailTo,
                         'message' => 'Order submitted successfully!',
                     ]);
                 }
             } else {
                 DB::rollBack();
-                return response()->json([
-                    'success' => false,
-                    'status_code' => 200,
+                return response([
+                    'status' => false,
                     'message' => 'Error occurred while creating Order!',
-                ]);
+                ], 404);
             }
 
             DB::commit();
-        } catch (Exception $exception) {
+        } catch (\Throwable $exception) {
+
             DB::rollBack();
+            return response([
+                'status' => false,
+                'message' => $exception->getMessage(),
+            ], 404);
         }
     }
 }
