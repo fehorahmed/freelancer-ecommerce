@@ -136,12 +136,12 @@ class OrderController extends Controller
         foreach ($request->products as $product) {
             $sale_price  +=  $product['sale_price'] * $product['quantity'];
         }
-        if ((float)$sale_price !=  (float)$request->total_amount) {
-            return response([
-                'status' => false,
-                'message' => 'Price is not match!',
-            ], 404);
-        }
+        // if ((float)$sale_price !=  (float)$request->total_amount) {
+        //     return response([
+        //         'status' => false,
+        //         'message' => 'Price is not match!',
+        //     ], 404);
+        // }
 
         try {
             DB::beginTransaction();
