@@ -110,6 +110,8 @@ Route::middleware('auth:sanctum', 'ability:user', 'throttle:1000,1')->group(func
         Route::get('profile', [AdminController::class, 'profile']);
         Route::post('save-address', [UserAddressController::class, 'store'])->name('api.address.save');
         Route::get('get-address', [UserAddressController::class, 'getAllAddress'])->name('api.address.all');
+        Route::get('{id}/edit-address', [UserAddressController::class, 'editAddress'])->name('api.address.edit');
+        Route::post('{id}/update-address', [UserAddressController::class, 'updateAddress'])->name('api.address.update');
         Route::post('delete-address', [UserAddressController::class, 'deleteAddress'])->name('api.address.delete');
         Route::post('place-order', [OrderController::class, 'postOrder'])->name('api.order.place');
     });
