@@ -12,6 +12,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RoomCategoryController;
 use App\Http\Controllers\SubDistrictController;
+use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserAddressController;
 use App\Http\Controllers\UserController;
@@ -73,18 +74,17 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
                 Route::post('/create', [ProductController::class, 'store'])->name('products.product.store');
                 Route::get('/{id}/edit', [ProductController::class, 'edit'])->name('products.product.edit');
                 Route::post('/{id}/edit', [ProductController::class, 'update'])->name('products.product.update');
-                Route::post('/stock-edit',[ProductController::class, 'stockEditByProduct'])->name('products.product.stock-edit');
+                Route::post('/stock-edit', [ProductController::class, 'stockEditByProduct'])->name('products.product.stock-edit');
 
                 // Route::delete('/{id}/delete', [ProductController::class, 'destroy'])->name('products.product.delete');
                 // Route::post('/products-list', [ProductController::class, 'getProductsList'])->name('products.product.list');
                 Route::get('/{id}/active', [ProductController::class, 'productActivate'])->name('products.product.active');
                 Route::get('/{id}/deactive', [ProductController::class, 'productDeActivate'])->name('products.product.deactive');
 
-                Route::post('/stock-update',[ProductsInventoriesController::class, 'ajaxStockEdit'])->name('products.stock.update');
+                Route::post('/stock-update', [ProductsInventoriesController::class, 'ajaxStockEdit'])->name('products.stock.update');
 
                 //CK upload
-                Route::post('/ckeditor-upload',[ProductController::class, 'ckeditorUpload'])->name('ckeditor.upload');
-
+                Route::post('/ckeditor-upload', [ProductController::class, 'ckeditorUpload'])->name('ckeditor.upload');
             });
         });
         Route::group(['prefix' => 'orders'], function () {
@@ -93,6 +93,13 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
             // Route::get('/{id}/edit', [WarrantyController::class, 'edit'])->name('products.orders.edit');
             // Route::post('/{id}/edit', [WarrantyController::class, 'update'])->name('products.orders.update');
             // Route::delete('/{id}/delete', [WarrantyController::class, 'destroy'])->name('products.orders.delete');
+        });
+        Route::group(['prefix' => 'suppliers'], function () {
+            Route::get('/', [SupplierController::class, 'index'])->name('products.suppliers.index');
+            Route::post('/create', [SupplierController::class, 'store'])->name('products.suppliers.store');
+            Route::get('/{id}/edit', [SupplierController::class, 'edit'])->name('products.suppliers.edit');
+            Route::post('/{id}/edit', [SupplierController::class, 'update'])->name('products.suppliers.update');
+            Route::delete('/{id}/delete', [SupplierController::class, 'destroy'])->name('products.suppliers.delete');
         });
     });
 });
@@ -121,12 +128,12 @@ Route::middleware('auth:sanctum', 'ability:user', 'throttle:1000,1')->group(func
 Frontend API
  ******************************* */
 
- Route::group(['middleware' => 'throttle:999000,1'], function () {
+Route::group(['middleware' => 'throttle:999000,1'], function () {
     Route::get('all-products', [ProductController::class, 'getAllProductsForWeb'])->name('api.all.products.web');
     Route::post('product-single', [ProductController::class, 'getProductByUrl'])->name('api.single.products');
     Route::post('category-products', [ProductController::class, 'getProductsByCategory'])->name('api.category.products');
     Route::post('brand-products', [ProductController::class, 'getProductsByBrand'])->name('api.brand.products');
- });
+});
 
 
 
@@ -148,6 +155,5 @@ Route::prefix('common')->middleware('throttle:1000,1')->group(function () {
     Route::get('get-active-units', [UnitController::class, 'getActiveUnits']);
     Route::get('get-active-warranty', [WarrantyController::class, 'getActiveWarranty']);
     //Get Product Stock
-    Route::get('product/{id}/stock',[ProductController::class, 'getStockByProduct'])->name('products.product.get-stock');
-
+    Route::get('product/{id}/stock', [ProductController::class, 'getStockByProduct'])->name('products.product.get-stock');
 });
