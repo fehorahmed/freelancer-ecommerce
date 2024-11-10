@@ -13,4 +13,11 @@ class PurchaseOrder extends Model
         $max = $maxindex + 1;
         return $max ? $max : 1;
     }
+
+    public function supplier(){
+        return $this->belongsTo(Supplier::class);
+    }
+    public function orderDetail(){
+        return $this->hasMany(PurchaseOrderDetail::class);
+    }
 }

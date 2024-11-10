@@ -180,9 +180,20 @@ class PurchaseOrderController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(PurchaseOrder $purchaseOrder)
+    public function edit($id)
     {
-        //
+        $data = PurchaseOrder::find($id);
+        if($data){
+            return response()->json([
+                'status' => true,
+                'data' => new PurchaseOrderResource($data)
+            ]);
+        }else{
+            return response()->json([
+                'status' => false,
+                'message' => 'Warranty not found.'
+            ],404);
+        }
     }
 
     /**

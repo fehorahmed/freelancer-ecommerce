@@ -105,7 +105,7 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
         Route::group(['prefix' => 'purchase-order'], function () {
             Route::get('/', [PurchaseOrderController::class, 'index'])->name('products.purchase-order.index');
             Route::post('/create', [PurchaseOrderController::class, 'store'])->name('products.purchase-order.store');
-            // Route::get('/{id}/edit', [WarrantyController::class, 'edit'])->name('products.orders.edit');
+            Route::get('/{id}/edit', [PurchaseOrderController::class, 'edit'])->name('products.orders.edit');
             // Route::post('/{id}/edit', [WarrantyController::class, 'update'])->name('products.orders.update');
             // Route::delete('/{id}/delete', [WarrantyController::class, 'destroy'])->name('products.orders.delete');
         });
