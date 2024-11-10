@@ -15,6 +15,7 @@ class ProductInventory extends Model
     // const ORDER_CANCEL = 5;
     // const STOCK_IN = 6;
     // const STOCK_OUT = 7;
+     const PURCHASE_ORDER = 8;
 
 
     public static function getStock($productId, $AttId)

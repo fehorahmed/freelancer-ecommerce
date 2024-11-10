@@ -20,6 +20,7 @@ class SupplierResource extends JsonResource
             "phone" => $this->phone,
             "description" => $this->description,
             "status" => $this->status,
+            "status_text" => $this->status == 1 ? 'Active' : 'Inactive',
             "created_by" => $this->created_by,
             "updated_by" => $this->updated_by,
 

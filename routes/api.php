@@ -10,6 +10,7 @@ use App\Http\Controllers\HotelController;
 use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\RoomCategoryController;
 use App\Http\Controllers\SubDistrictController;
 use App\Http\Controllers\SupplierController;
@@ -101,6 +102,13 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
             Route::post('/{id}/edit', [SupplierController::class, 'update'])->name('products.suppliers.update');
             Route::delete('/{id}/delete', [SupplierController::class, 'destroy'])->name('products.suppliers.delete');
         });
+        Route::group(['prefix' => 'purchase-order'], function () {
+            Route::get('/', [PurchaseOrderController::class, 'index'])->name('products.purchase-order.index');
+            Route::post('/create', [PurchaseOrderController::class, 'store'])->name('products.purchase-order.store');
+            // Route::get('/{id}/edit', [WarrantyController::class, 'edit'])->name('products.orders.edit');
+            // Route::post('/{id}/edit', [WarrantyController::class, 'update'])->name('products.orders.update');
+            // Route::delete('/{id}/delete', [WarrantyController::class, 'destroy'])->name('products.orders.delete');
+        });
     });
 });
 
@@ -121,6 +129,7 @@ Route::middleware('auth:sanctum', 'ability:user', 'throttle:1000,1')->group(func
         Route::post('{id}/update-address', [UserAddressController::class, 'updateAddress'])->name('api.address.update');
         Route::post('delete-address', [UserAddressController::class, 'deleteAddress'])->name('api.address.delete');
         Route::post('place-order', [OrderController::class, 'postOrder'])->name('api.order.place');
+        Route::get('orders-history', [OrderController::class, 'getOrderHistory'])->name('api.order.history');
     });
 });
 

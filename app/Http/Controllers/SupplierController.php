@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\SupplierResource;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class SupplierController extends Controller
 {
@@ -38,7 +39,40 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $rules = [
+            'name'=>'required|string|max:255|unique:suppliers,name',
+            'description'=>'nullable|string|max:255',
+            'status'=>'required|boolean',
+            'phone'=>'nullable|string|max:255',
+        ];
+
+        $validation = Validator::make($request->all(),$rules);
+        if($validation->fails()){
+            return response()->json([
+                'status' => false,
+                'message' => $validation->errors()->first(),
+                'errors' => $validation->errors()
+            ],422);
+        }
+
+        $data = new Supplier();
+        $data->name = $request->name;
+        $data->description = $request->description;
+        $data->phone = $request->phone;
+        $data->status = $request->status;
+        $data->created_by = auth()->id();
+
+        if($data->save()){
+            return response()->json([
+                'status' => true,
+                'message' => 'Supplier created successfully.'
+            ]);
+        }else{
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong.'
+            ],404);
+        }
     }
 
     /**
@@ -52,17 +86,63 @@ class SupplierController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Supplier $supplier)
+    public function edit( $id)
     {
-        //
+        $data = Supplier::find($id);
+        if($data){
+            return response()->json([
+                'status' => true,
+                'data' => new SupplierResource($data)
+            ]);
+        }else{
+            return response()->json([
+                'status' => false,
+                'message' => 'Supplier not found.'
+            ],404);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Supplier $supplier)
+    public function update(Request $request, $id)
     {
-        //
+        $rules = [
+            'name'=>'required|string|max:255|unique:brands,name,'.$id,
+            'description'=>'nullable|string|max:255',
+            'phone'=>'nullable|string|max:255',
+
+            'status'=>'required|boolean',
+        ];
+
+        $validation = Validator::make($request->all(),$rules);
+        if($validation->fails()){
+            return response()->json([
+                'status' => false,
+                'message' => $validation->errors()->first(),
+                'errors' => $validation->errors()
+            ],422);
+        }
+
+        $data =  Supplier::find($id);
+        $data->name = $request->name;
+        $data->description = $request->description;
+        $data->status = $request->status;
+        $data->phone = $request->phone;
+
+        $data->updated_by = auth()->id();
+
+        if($data->save()){
+            return response()->json([
+                'status' => true,
+                'message' => 'Supplier updated successfully.'
+            ]);
+        }else{
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong.'
+            ],404);
+        }
     }
 
     /**

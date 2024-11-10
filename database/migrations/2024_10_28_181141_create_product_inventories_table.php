@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('reference')->nullable();
             $table->date('date');
             $table->boolean('status')->default(1);
+            $table->foreignId('purchase_order_id')->nullable();
             $table->foreignId('created_by')->nullable();
             $table->foreign('created_by')->references('id')->on('admins');
             $table->foreignId('updated_by')->nullable();

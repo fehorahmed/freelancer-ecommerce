@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\OrderHistoryResource;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use App\Models\OrderDetail;
@@ -307,6 +308,15 @@ class OrderController extends Controller
                 'status' => false,
                 'message' => $exception->getMessage(),
             ], 404);
+        }
+    }
+
+    public function getOrderHistory(Request $request)
+    {
+        $user_id = Auth::user()->id;
+        if ($user_id > 0) {
+            $data = Order::where('user_id', '=', $user_id)->orderBy('id', 'DESC')->paginate(10);
+            return OrderHistoryResource::collection($data);
         }
     }
 }
