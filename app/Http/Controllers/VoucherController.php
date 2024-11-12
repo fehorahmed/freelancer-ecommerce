@@ -79,7 +79,7 @@ class VoucherController extends Controller
             $voucher->no_of_usage = $request->no_of_usage;
             $voucher->discount_amount = $request->discount_amount;
             $voucher->discount_percentage = $request->discount_percentage;
-            $voucher->start_date = $request->strt_date;
+            $voucher->start_date = $request->start_date;
             $voucher->start_time = $request->strt_time;
             $voucher->end_time = $request->end_time;
             $voucher->end_date = $request->end_date;
