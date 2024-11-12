@@ -77,6 +77,7 @@ class VoucherController extends Controller
             $voucher->title = $request->title;
             $voucher->coupon_code = $request->coupon_code;
             $voucher->no_of_usage = $request->no_of_usage;
+            $voucher->discountby = $request->discountby;
             $voucher->discount_amount = $request->discount_amount;
             $voucher->discount_percentage = $request->discount_percentage;
             $voucher->start_date = $request->start_date;
@@ -157,9 +158,20 @@ class VoucherController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Voucher $voucher)
+    public function edit( $id)
     {
-        //
+        $data = Voucher::find($id);
+        if($data){
+            return response()->json([
+                'status' => true,
+                'data' => new VouvherResource($data)
+            ]);
+        }else{
+            return response()->json([
+                'status' => false,
+                'message' => 'Brand not found.'
+            ],404);
+        }
     }
 
     /**
