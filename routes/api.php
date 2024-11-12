@@ -17,6 +17,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserAddressController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\WarrantyController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -86,6 +87,15 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
 
                 //CK upload
                 Route::post('/ckeditor-upload', [ProductController::class, 'ckeditorUpload'])->name('ckeditor.upload');
+            });
+        });
+        Route::group(['prefix' => 'campain'], function () {
+            Route::group(['prefix' => 'vouchers'], function () {
+                Route::get('/', [VoucherController::class, 'index'])->name('campain.vouchers.index');
+                Route::post('/create', [VoucherController::class, 'store'])->name('campain.vouchers.store');
+                Route::get('/{id}/edit', [VoucherController::class, 'edit'])->name('campain.vouchers.edit');
+                Route::post('/{id}/edit', [VoucherController::class, 'update'])->name('campain.vouchers.update');
+                Route::delete('/{id}/delete', [VoucherController::class, 'destroy'])->name('campain.vouchers.delete');
             });
         });
         Route::group(['prefix' => 'orders'], function () {

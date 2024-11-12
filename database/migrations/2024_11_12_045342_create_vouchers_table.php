@@ -19,9 +19,10 @@ return new class extends Migration
             $table->double('discount_amount')->nullable();
             $table->double('discount_percentage')->nullable();
             $table->date('start_date');
-            $table->time('start_time');
+            $table->time('start_time')->nullable();
             $table->date('end_date');
-            $table->time('end_time');
+            $table->enum('discountby',['amount','percentage']);
+            $table->time('end_time')->nullable();
             $table->tinyInteger('status')->default(1);
             $table->boolean('visibility')->default(1);
             $table->boolean('is_apps_only')->default(0);
