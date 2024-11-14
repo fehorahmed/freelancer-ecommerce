@@ -56,9 +56,9 @@ class OrderController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Order $order)
+    public function show($id)
     {
-        //
+       return new OrderResource(Order::find($id));
     }
 
     /**

@@ -12,6 +12,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\RoomCategoryController;
+use App\Http\Controllers\ShippingChargeController;
 use App\Http\Controllers\SubDistrictController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UnitController;
@@ -98,8 +99,20 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
                 Route::delete('/{id}/delete', [VoucherController::class, 'destroy'])->name('campain.vouchers.delete');
             });
         });
+
+        Route::group(['prefix' => 'shipping-charges'], function () {
+            Route::get('/', [ShippingChargeController::class, 'index'])->name('shipping.charges.index');
+            Route::get('/create', [ShippingChargeController::class, 'create'])->name('shipping.charges.create');
+            Route::post('/create', [ShippingChargeController::class, 'store'])->name('shipping.charges.store');
+            Route::get('/{id}/edit',[ShippingChargeController::class, 'edit'])->name('shipping.charges.edit');
+            Route::post('/{id}/edit',[ShippingChargeController::class, 'update'])->name('shipping.charges.update');
+            Route::delete('/{id}/delete', [ShippingChargeController::class, 'destroy'])->name('shipping.charges.delete');
+            Route::delete('/list', [ShippingChargeController::class, 'chargeList'])->name('shipping.charges.list');
+        });
+
         Route::group(['prefix' => 'orders'], function () {
             Route::get('/', [OrderController::class, 'index'])->name('products.orders.index');
+            Route::get('/{id}/view', [OrderController::class, 'show'])->name('products.orders.view');
             // Route::post('/create', [WarrantyController::class, 'store'])->name('products.orders.store');
             // Route::get('/{id}/edit', [WarrantyController::class, 'edit'])->name('products.orders.edit');
             // Route::post('/{id}/edit', [WarrantyController::class, 'update'])->name('products.orders.update');
@@ -115,9 +128,9 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
         Route::group(['prefix' => 'purchase-order'], function () {
             Route::get('/', [PurchaseOrderController::class, 'index'])->name('products.purchase-order.index');
             Route::post('/create', [PurchaseOrderController::class, 'store'])->name('products.purchase-order.store');
-            Route::get('/{id}/edit', [PurchaseOrderController::class, 'edit'])->name('products.orders.edit');
-            // Route::post('/{id}/edit', [WarrantyController::class, 'update'])->name('products.orders.update');
-            // Route::delete('/{id}/delete', [WarrantyController::class, 'destroy'])->name('products.orders.delete');
+            Route::get('/{id}/edit', [PurchaseOrderController::class, 'edit'])->name('products.purchase-order.edit');
+            Route::post('/{id}/edit', [PurchaseOrderController::class, 'update'])->name('products.purchase-order.update');
+            // Route::delete('/{id}/delete', [PurchaseOrderController::class, 'destroy'])->name('products.purchase-order.delete');
         });
     });
 });

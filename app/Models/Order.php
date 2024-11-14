@@ -14,4 +14,8 @@ class Order extends Model
         $max = $maxindex + 1;
        return $max?$max:1;
     }
+
+    public function orderDetails(){
+        return $this->hasMany(OrderDetail::class);
+    }
 }

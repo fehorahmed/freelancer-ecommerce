@@ -26,6 +26,7 @@ class OrderResource extends JsonResource
             "coupon_code"=>$this->coupon_code,
             "user_address_id"=>$this->user_address_id,
             "created_by"=>$this->created_by,
+            "order_details"=>OrderDetailResource::collection($this->orderDetails)
 
         ];
     }
