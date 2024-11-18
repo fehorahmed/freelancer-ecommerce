@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\OrderStatus;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -26,6 +27,7 @@ class OrderResource extends JsonResource
             "coupon_code"=>$this->coupon_code,
             "user_address_id"=>$this->user_address_id,
             "created_by"=>$this->created_by,
+            "status"=>OrderStatus::getOrderStatus($this->id),
             "order_details"=>OrderDetailResource::collection($this->orderDetails)
 
         ];

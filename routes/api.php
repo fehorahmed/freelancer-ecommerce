@@ -113,10 +113,15 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
         Route::group(['prefix' => 'orders'], function () {
             Route::get('/', [OrderController::class, 'index'])->name('products.orders.index');
             Route::get('/{id}/view', [OrderController::class, 'show'])->name('products.orders.view');
-            // Route::post('/create', [WarrantyController::class, 'store'])->name('products.orders.store');
+            Route::post('/{id}/status-change', [OrderController::class, 'statusChange'])->name('products.orders.status-change');
+            Route::get('/get-all-status', [OrderController::class, 'allStatus'])->name('products.orders.all-status');
+
             // Route::get('/{id}/edit', [WarrantyController::class, 'edit'])->name('products.orders.edit');
             // Route::post('/{id}/edit', [WarrantyController::class, 'update'])->name('products.orders.update');
             // Route::delete('/{id}/delete', [WarrantyController::class, 'destroy'])->name('products.orders.delete');
+
+            Route::post('/create', [OrderController::class, 'customerOrderStore'])->name('products.orders.customer-order-store');
+
         });
         Route::group(['prefix' => 'suppliers'], function () {
             Route::get('/', [SupplierController::class, 'index'])->name('products.suppliers.index');

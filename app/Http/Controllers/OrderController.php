@@ -31,8 +31,8 @@ class OrderController extends Controller
             $perPage = 10;
         }
         $query = Order::query();
-        if($request->search){
-            $query->where('order_no','LIKE',"%{$request->search}%");
+        if ($request->search) {
+            $query->where('order_no', 'LIKE', "%{$request->search}%");
         }
         return OrderResource::collection($query->paginate($perPage));
     }
@@ -48,9 +48,8 @@ class OrderController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function customerOrderStore(Request $request)
     {
-        //
     }
 
     /**
@@ -58,7 +57,7 @@ class OrderController extends Controller
      */
     public function show($id)
     {
-       return new OrderResource(Order::find($id));
+        return new OrderResource(Order::find($id));
     }
 
     /**
@@ -77,12 +76,66 @@ class OrderController extends Controller
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Order $order)
+    public function statusChange(Request $request, $id)
     {
-        //
+
+        $validator = Validator::make($request->all(), [
+            'status' => "required|numeric",
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $order = Order::find($id);
+        if (!$order) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Order not found.',
+            ], 404);
+        }
+
+        try {
+            $data =  new OrderStatus();
+            $data->order_id = $order->id;
+            $data->status = $request->status;
+            $data->remarks = 'Change by Admin';
+            $data->date = Carbon::now();
+            $data->updated_by = Auth::id();
+            if($data->save()){
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Order status change successfully.',
+                ]);
+            }else{
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Something went wrong.',
+                ]);
+            }
+        } catch (\Throwable $th) {
+
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage(),
+            ]);
+        }
+
+
+    }
+    public function allStatus()
+    {
+
+
+        return OrderStatus::allOrderStatus();
+    }
+    public function orderStatusList()
+    {
     }
 
     public function postOrder(Request $request)
@@ -248,7 +301,7 @@ class OrderController extends Controller
                     return response()->json([
                         'status' => false,
                         'message' => 'Error occurred while creating Order!',
-                    ],404);
+                    ], 404);
                 } else {
                     DB::commit();
 
