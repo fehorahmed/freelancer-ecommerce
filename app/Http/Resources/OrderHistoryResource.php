@@ -28,6 +28,7 @@ class OrderHistoryResource extends JsonResource
             "discount" => $this->discount,
             "coupon_code" => $this->coupon_code,
             "user_address" => new UserAddressResource(UserAddress::find($this->user_address_id)),
+            "order_details"=>OrderDetailResource::collection($this->orderDetails),
             "created_by" => $this->created_by,
             "created_at" => $this->created_at,
         ];

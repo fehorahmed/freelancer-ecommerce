@@ -13,6 +13,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\RoomCategoryController;
 use App\Http\Controllers\ShippingChargeController;
+use App\Http\Controllers\SliderController;
 use App\Http\Controllers\SubDistrictController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UnitController;
@@ -137,6 +138,13 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
             Route::post('/{id}/edit', [PurchaseOrderController::class, 'update'])->name('products.purchase-order.update');
             // Route::delete('/{id}/delete', [PurchaseOrderController::class, 'destroy'])->name('products.purchase-order.delete');
         });
+        Route::group(['prefix' => 'sliders'], function () {
+            Route::get('/', [SliderController::class, 'index'])->name('sliders.index');
+            Route::post('/create', [SliderController::class, 'store'])->name('sliders.store');
+            Route::get('/{id}/edit', [SliderController::class, 'edit'])->name('sliders.edit');
+            Route::post('/{id}/edit', [SliderController::class, 'update'])->name('sliders.update');
+            Route::get('/{id}/delete', [SliderController::class, 'destroy'])->name('sliders.delete');
+        });
     });
 });
 
@@ -158,6 +166,7 @@ Route::middleware('auth:sanctum', 'ability:user', 'throttle:1000,1')->group(func
         Route::post('delete-address', [UserAddressController::class, 'deleteAddress'])->name('api.address.delete');
         Route::post('place-order', [OrderController::class, 'postOrder'])->name('api.order.place');
         Route::get('orders-history', [OrderController::class, 'getOrderHistory'])->name('api.order.history');
+        Route::post('change-password', [UserController::class, 'apiChangePassword'])->name('api.change.password');
     });
 });
 
@@ -180,6 +189,7 @@ Common API
 Route::middleware('auth:sanctum', 'throttle:1000,1')->group(function () {
 
     Route::get('profile', [CommonController::class, 'profile']);
+    Route::get('logout', [CommonController::class, 'logout']);
 });
 Route::prefix('common')->middleware('throttle:1000,1')->group(function () {
     Route::get('get-division', [DivisionController::class, 'apiGetDivision']);
@@ -191,6 +201,8 @@ Route::prefix('common')->middleware('throttle:1000,1')->group(function () {
     Route::get('get-active-brands', [BrandController::class, 'getActiveBrands']);
     Route::get('get-active-units', [UnitController::class, 'getActiveUnits']);
     Route::get('get-active-warranty', [WarrantyController::class, 'getActiveWarranty']);
+    //Get All Slider
+    Route::get('get-all-slider', [SliderController::class, 'getAllSlider']);
     //Get Product Stock
     Route::get('product/{id}/stock', [ProductController::class, 'getStockByProduct'])->name('products.product.get-stock');
 });

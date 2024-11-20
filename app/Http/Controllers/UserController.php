@@ -28,7 +28,7 @@ class UserController extends Controller
             return response([
                 'status' => false,
                 'message' => $validation->messages()->first(),
-            ],403);
+            ], 403);
         }
 
         if (
@@ -39,7 +39,7 @@ class UserController extends Controller
             return response([
                 'status' => false,
                 'message' => "Email or password dose not match.",
-            ],404);
+            ], 404);
         } else {
             $token = $request->user()->createToken('admin-access-token', ['user'])->plainTextToken;
             return response()->json([
@@ -49,7 +49,8 @@ class UserController extends Controller
             ]);
         }
     }
-    public function profile(Request $request){
+    public function profile(Request $request)
+    {
         return response()->json([
             'status' => true,
             'user' => new UserResource($request->user()),
@@ -58,7 +59,8 @@ class UserController extends Controller
     }
 
 
-    public function apiRegistration(UserRegistrationRequest $request){
+    public function apiRegistration(UserRegistrationRequest $request)
+    {
         $validatedData = $request->validated();
         // dd($request->all());
 
@@ -70,16 +72,55 @@ class UserController extends Controller
         $user->gender = $request->gender;
         $user->dob = $request->date_of_birth;
 
-        if($user->save()){
+        if ($user->save()) {
             return response([
                 'status' => true,
                 'message' => 'Registration Success..',
             ]);
-        }else{
+        } else {
             return response([
                 'status' => false,
                 'message' => 'Something went wrong..!',
-            ],500);
+            ], 500);
+        }
+    }
+    public function apiChangePassword(Request $request)
+    {
+        $rules = [
+            'old_password' => 'required|string|min:6|max:255',
+            'password' => 'required|confirmed|string|min:6|max:255',
+
+        ];
+
+
+        if(!Hash::check($request->old_password,auth()->user()->password)){
+            return response()->json([
+                'status' => false,
+                'message' => 'Old password is not correct.',
+
+            ], 404);
+        }
+
+        $validation = Validator::make($request->all(), $rules);
+        if ($validation->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validation->errors()->first(),
+                'errors' => $validation->errors()
+            ], 422);
+        }
+        $user = User::find(auth()->id());
+        $user->password = Hash::make($request->password);
+        if ($user->save()) {
+            return response([
+                'status' => true,
+                'message' => 'Password update success..',
+            ]);
+        } else {
+            return response([
+                'status' => false,
+                'message' => 'Something went wrong..!',
+            ], 500);
         }
     }
 }

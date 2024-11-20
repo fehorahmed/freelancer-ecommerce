@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('shipping_charge_limits', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('shipping_charge_limit_id');
-            $table->foreign('shipping_charge_limit_id')->references('id')->on('shipping_charges');
+            $table->foreignId('shipping_charge_id');
+            $table->foreign('shipping_charge_id')->references('id')->on('shipping_charges');
             $table->foreignId('unit_id');
             $table->foreign('unit_id')->references('id')->on('units');
             $table->double('limit');
             $table->double('per_unit');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
