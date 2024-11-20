@@ -296,4 +296,29 @@ class VoucherController extends Controller
     {
         //
     }
+    public function getCouponDetails(Request $request)
+    {
+        $rules = [
+            'coupon_code' => "required|string",
+        ];
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors()
+            ],422);
+        }
+
+        $voucher = Voucher::where('coupon_code',$request->coupon_code)->first();
+        if($voucher){
+
+        }else{
+            return response([
+                'status'=>false,
+                'message'=>'Coupon not found.'
+            ]);
+        }
+
+    }
 }

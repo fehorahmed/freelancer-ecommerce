@@ -24,7 +24,7 @@ class OrderStatus extends Model
         $arr = [
             1 => 'Pending',
             2 => 'Processing',
-            // 3 => 'Paid',
+            3 => 'Paid',
             4 => 'Cash on Delivery',
             // 5 => 'Picked',
             6 => 'Shipped',
@@ -43,7 +43,7 @@ class OrderStatus extends Model
         $arr = [
             1 => 'Pending',
             2 => 'Processing',
-            // 3 => 'Paid',
+            3 => 'Paid',
             4 => 'Cash on Delivery',
             // 5 => 'Picked',
             6 => 'Shipped',
@@ -51,9 +51,9 @@ class OrderStatus extends Model
             8 => 'Canceled',
         ];
 
-        if(isset($arr[$key])){
+        if (isset($arr[$key])) {
             return $arr[$key];
-        }else{
+        } else {
             return $key;
         }
     }

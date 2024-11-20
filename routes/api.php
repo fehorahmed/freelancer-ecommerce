@@ -205,4 +205,7 @@ Route::prefix('common')->middleware('throttle:1000,1')->group(function () {
     Route::get('get-all-slider', [SliderController::class, 'getAllSlider']);
     //Get Product Stock
     Route::get('product/{id}/stock', [ProductController::class, 'getStockByProduct'])->name('products.product.get-stock');
+    //Coupon Details
+    Route::post('coupon-details', [VoucherController::class, 'getCouponDetails']);
+
 });
