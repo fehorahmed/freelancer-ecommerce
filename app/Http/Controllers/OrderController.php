@@ -270,6 +270,7 @@ class OrderController extends Controller
 
         $validator = Validator::make($request->all(), [
             'status' => "required|numeric",
+            'remarks' => "nullable|string|max:255",
         ]);
 
         if ($validator->fails()) {
@@ -292,7 +293,7 @@ class OrderController extends Controller
             $data =  new OrderStatus();
             $data->order_id = $order->id;
             $data->status = $request->status;
-            $data->remarks = 'Change by Admin';
+            $data->remarks = $request->remarks;
             $data->date = Carbon::now();
             $data->updated_by = Auth::id();
             if ($data->save()) {

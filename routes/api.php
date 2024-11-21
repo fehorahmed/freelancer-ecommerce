@@ -208,4 +208,6 @@ Route::prefix('common')->middleware('throttle:1000,1')->group(function () {
     //Coupon Details
     Route::post('coupon-details', [VoucherController::class, 'getCouponDetails']);
 
+    Route::get('products-voucher/{product_id}/{coupon_code}', [VoucherController::class, 'getVoucherProducts'])->name('api.voucher.products');
+
 });

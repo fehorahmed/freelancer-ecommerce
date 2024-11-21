@@ -341,4 +341,41 @@ class VoucherController extends Controller
         }
 
     }
+
+    public function getVoucherProducts($product_id, $coupon_code)
+    {
+        $vc = DB::select("SELECT vouchers.id,vouchers.start_date,vouchers.start_time,vouchers.end_date,vouchers.end_time,vouchers.title,voucher_products.coupon_code,voucher_products.product_id,voucher_products.status,vouchers.discount_amount,vouchers.discount_percentage,vouchers.no_of_usage FROM vouchers INNER JOIN voucher_products ON vouchers.id=voucher_products.voucher_id WHERE vouchers.status = 1 AND vouchers.is_apps_only = 0 AND voucher_products.product_id=$product_id AND voucher_products.coupon_code='$coupon_code';");
+        $vc = Voucher::select([
+            'vouchers.id',
+            'vouchers.start_date',
+            'vouchers.start_time',
+            'vouchers.end_date',
+            'vouchers.end_time',
+            'vouchers.title',
+            'voucher_products.coupon_code',
+            'voucher_products.product_id',
+            'voucher_products.status',
+            'vouchers.discount_amount',
+            'vouchers.discount_percentage',
+            'vouchers.no_of_usage',
+        ])
+        ->join('voucher_products', 'vouchers.id', '=', 'voucher_products.voucher_id')
+        ->where('vouchers.status', 1)
+        ->where('voucher_products.product_id', $product_id)
+        ->where('voucher_products.coupon_code', $coupon_code)
+        ->get();
+        dd($vc);
+        if($vc)
+        {
+            return VoucherResource::collection($vc);
+        }
+        else{
+            return response()->json([
+                'success' => false,
+                'status_code' => 200,
+                'message' => 'Product not Found.',
+                'error' => 'Product not Found',
+            ]);
+        }
+    }
 }
