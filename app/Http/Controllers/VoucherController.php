@@ -6,6 +6,7 @@ use App\Http\Resources\VoucherResource;
 use App\Http\Resources\VouvherResource;
 use App\Models\Voucher;
 use App\Models\VoucherProduct;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -310,8 +311,27 @@ class VoucherController extends Controller
             ],422);
         }
 
-        $voucher = Voucher::where('coupon_code',$request->coupon_code)->first();
+        $voucher = Voucher::where(['coupon_code'=>$request->coupon_code,'status'=>1])
+        ->whereDate('start_date', '<=', Carbon::now())
+        ->whereDate('end_date', '>=', Carbon::now())
+        ->first();
         if($voucher){
+
+            if($voucher->discountby == 'amount'){
+                $d_by = 'amount';
+                $amount = $voucher->discount_amount;
+
+            }
+            if($voucher->discountby == 'percentage'){
+                $d_by = 'percentage';
+                $amount = $voucher->discount_percentage;
+            }
+            return response([
+                'status'=>true,
+                'discountby'=> $d_by,
+                'amount'=> $amount,
+            ]);
+
 
         }else{
             return response([

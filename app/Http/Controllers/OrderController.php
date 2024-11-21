@@ -11,6 +11,7 @@ use App\Models\PaymentDetail;
 use App\Models\Product;
 use App\Models\ProductInventory;
 use App\Models\UserAddress;
+use App\Models\Voucher;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -238,7 +239,6 @@ class OrderController extends Controller
                 'message' => $exception->getMessage(),
             ], 404);
         }
-
     }
 
     /**
@@ -272,7 +272,6 @@ class OrderController extends Controller
             'status' => "required|numeric",
         ]);
 
-
         if ($validator->fails()) {
             return response()->json([
                 'status' => false,
@@ -296,12 +295,12 @@ class OrderController extends Controller
             $data->remarks = 'Change by Admin';
             $data->date = Carbon::now();
             $data->updated_by = Auth::id();
-            if($data->save()){
+            if ($data->save()) {
                 return response()->json([
                     'status' => true,
                     'message' => 'Order status change successfully.',
                 ]);
-            }else{
+            } else {
                 return response()->json([
                     'status' => false,
                     'message' => 'Something went wrong.',
@@ -314,8 +313,6 @@ class OrderController extends Controller
                 'message' => $th->getMessage(),
             ]);
         }
-
-
     }
     public function allStatus()
     {
@@ -334,6 +331,7 @@ class OrderController extends Controller
             'address_id' => "required|numeric",
             'shipping_charge' => "required|numeric",
             'total_amount' => "required",
+            'coupon_code' => "nullable|string|max:255",
             'discount' => "nullable|numeric",
             'payment_type' => "required",
             'products' => 'required|array',
@@ -385,6 +383,34 @@ class OrderController extends Controller
         //         'message' => 'Price is not match!',
         //     ], 404);
         // }
+
+        if ($request->coupon_code) {
+
+
+            $voucher = Voucher::where(['coupon_code' => $request->coupon_code, 'status' => 1])
+                ->whereDate('start_date', '<=', Carbon::now())
+                ->whereDate('end_date', '>=', Carbon::now())
+                ->first();
+            if ($voucher) {
+                // if ($voucher->discountby == 'amount') {
+                //     $v_by = 'amount';
+                //     $v_amount = $voucher->discount_amount;
+                // }
+                // if ($voucher->discountby == 'percentage') {
+                //     $v_by = 'percentage';
+                //     $v_amount = $voucher->discount_percentage;
+                // }
+
+            } else {
+                return response([
+                    'status' => false,
+                    'message' => 'Coupon not found.'
+                ]);
+            }
+        }
+
+
+
 
         try {
             DB::beginTransaction();
