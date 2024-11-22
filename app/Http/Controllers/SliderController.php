@@ -202,6 +202,6 @@ class SliderController extends Controller
     }
     public function getAllSlider()
     {
-        return SliderResource::collection(Slider::all());
+        return SliderResource::collection(Slider::orderBy('serial','ASC')->get());
     }
 }

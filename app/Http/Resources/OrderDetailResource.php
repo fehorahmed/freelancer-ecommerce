@@ -19,6 +19,7 @@ class OrderDetailResource extends JsonResource
             "order_id" => $this->order_id,
             "product_id" => $this->product_id,
             "product_name" => $this->product->name,
+            "image" => $this->product->image ? asset('/') . 'storage/images/products/profile/150/' . $this->product->image : null,
             "attribute_id" => $this->attribute_id,
             "quantity" => $this->quantity,
             "discount_type" => $this->discount_type,

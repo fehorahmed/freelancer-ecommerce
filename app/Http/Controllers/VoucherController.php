@@ -364,7 +364,7 @@ class VoucherController extends Controller
         ->where('voucher_products.product_id', $product_id)
         ->where('voucher_products.coupon_code', $coupon_code)
         ->get();
-        dd($vc);
+        // dd($vc);
         if($vc)
         {
             return VoucherResource::collection($vc);

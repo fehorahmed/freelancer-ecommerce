@@ -179,6 +179,14 @@ Route::group(['middleware' => 'throttle:999000,1'], function () {
     Route::post('product-single', [ProductController::class, 'getProductByUrl'])->name('api.single.products');
     Route::post('category-products', [ProductController::class, 'getProductsByCategory'])->name('api.category.products');
     Route::post('brand-products', [ProductController::class, 'getProductsByBrand'])->name('api.brand.products');
+
+
+    Route::post('forget-password', [UserController::class, 'apiForgetPassword'])->name('api.forget.password');
+    Route::post('reset-password', [UserController::class, 'apiResetPassword'])->name('api.reset.password');
+
+
+
+
 });
 
 
