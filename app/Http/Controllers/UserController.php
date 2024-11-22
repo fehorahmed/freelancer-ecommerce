@@ -128,7 +128,9 @@ class UserController extends Controller
         $rules = [
             'email' => 'required|email|string|max:255',
         ];
-
+        // $origin = $request->header('Origin');
+        // $referer = $request->header('Referer');
+        // dd($referer);
         $validation = Validator::make($request->all(), $rules);
         if ($validation->fails()) {
             return response()->json([
