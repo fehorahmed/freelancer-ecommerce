@@ -653,6 +653,8 @@ class ProductController extends Controller
             'name' => 'nullable|string',
             'min_price' => 'nullable|numeric',
             'max_price' => 'nullable|numeric',
+            'brand' => 'nullable|numeric',
+            'category' => 'nullable|numeric',
         ];
 
         $validation = Validator::make($request->all(), $rules);
@@ -672,9 +674,15 @@ class ProductController extends Controller
         if ($request->search) {
             $query->where('name', 'LIKE', "%{$request->search}%");
         }
+        if ($request->brand) {
+            $query->where('brand_id', $request->brand);
+        }
+        if ($request->category) {
+            $query->where('category_id', $request->category);
+        }
 
         if (isset($request->min_price) && isset($request->max_price)) {
-            $data = $query->whereHas('productPrice', function (Builder $query) use ($request) {
+            $query->whereHas('productPrice', function (Builder $query) use ($request) {
                 $query->whereBetween('sell_price', [$request->min_price, $request->max_price]);
             });
         }
@@ -727,22 +735,22 @@ class ProductController extends Controller
         if (isset($request->url)) {
             $category = Category::where('url', '=', $request->url)->first();
             $childCategory = Category::getChildrenCategory($category->id);
-            if(is_array($childCategory)){
-                array_push($childCategory,$category->id);
-            }else{
+            if (is_array($childCategory)) {
+                array_push($childCategory, $category->id);
+            } else {
                 $childCategory = [$category->id];
             }
 
-           // dd($childCategory);
-            $data = Product::select('id', 'name', 'url', 'sku', 'type', 'brand_id', 'unit_id','category_id', 'is_featured', 'image', 'created_at', 'updated_at')
-                ->whereIn('category_id',$childCategory)->where('status',1);
+            // dd($childCategory);
+            $data = Product::select('id', 'name', 'url', 'sku', 'type', 'brand_id', 'unit_id', 'category_id', 'is_featured', 'image', 'created_at', 'updated_at')
+                ->whereIn('category_id', $childCategory)->where('status', 1);
 
             if (isset($request->min_price) && isset($request->max_price)) {
                 $data = $data->whereHas('productPrice', function (Builder $query) use ($request) {
                     $query->whereBetween('sell_price', [$request->min_price, $request->max_price]);
                 });
             }
-           // $data = $data->where('status', '=', 1)->where('is_apps_only', '=', 0);
+            // $data = $data->where('status', '=', 1)->where('is_apps_only', '=', 0);
             $data = $data->get();
 
             return MultiProductResource::collection($data);
@@ -766,14 +774,14 @@ class ProductController extends Controller
 
         if (isset($request->name)) {
             $brand = Brand::where('name', '=', $request->name)->first();
-            if(!$brand){
+            if (!$brand) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Brand not found.'
 
                 ], 404);
             }
-            $data = Product::where('brand_id',$brand->id);
+            $data = Product::where('brand_id', $brand->id);
 
             // if (isset($request->category)) {
             //     $category = Categories::where('url', '=', $request->category)->first();
