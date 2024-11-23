@@ -6,6 +6,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\DivisionController;
+use App\Http\Controllers\GlobalConfigController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\OrderController;
@@ -144,6 +145,11 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
             Route::get('/{id}/edit', [SliderController::class, 'edit'])->name('sliders.edit');
             Route::post('/{id}/edit', [SliderController::class, 'update'])->name('sliders.update');
             Route::get('/{id}/delete', [SliderController::class, 'destroy'])->name('sliders.delete');
+        });
+
+        Route::group(['prefix' => 'global-config'], function () {
+            Route::get('/', [GlobalConfigController::class, 'index'])->name('global-config.index');
+            Route::post('/create', [GlobalConfigController::class, 'store'])->name('global-config.store');
         });
     });
 });
