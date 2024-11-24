@@ -39,18 +39,18 @@ class GlobalConfigController extends Controller
     public function store(Request $request)
     {
 
-        $rules = [
-            'tittle'           => 'required|string',
-            'top_logo'           => 'nullable|image',
-        ];
-        $validation = Validator::make($request->all(), $rules);
-        if ($validation->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => $validation->errors()->first(),
-                'errors' => $validation->errors()
-            ], 422);
-        }
+        // $rules = [
+        //     'tittle'           => 'required|string',
+        //     'top_logo'           => 'nullable|image',
+        // ];
+        // $validation = Validator::make($request->all(), $rules);
+        // if ($validation->fails()) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'message' => $validation->errors()->first(),
+        //         'errors' => $validation->errors()
+        //     ], 422);
+        // }
 
         $request->request->remove('_token');
         foreach ($request->all() as $key => $value) {
