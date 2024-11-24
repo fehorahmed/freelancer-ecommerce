@@ -10,6 +10,7 @@ use App\Http\Controllers\GlobalConfigController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\RoomCategoryController;
@@ -151,6 +152,12 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
             Route::get('/', [GlobalConfigController::class, 'index'])->name('global-config.index');
             Route::post('/create', [GlobalConfigController::class, 'store'])->name('global-config.store');
         });
+        Route::group(['prefix' => 'pages'], function () {
+            Route::get('/', [PageController::class, 'index'])->name('pages.index');
+            Route::post('/create', [PageController::class, 'store'])->name('pages.store');
+            Route::get('/{id}/edit', [PageController::class, 'edit'])->name('pages.edit');
+            Route::post('/{id}/edit', [PageController::class, 'update'])->name('pages.update');
+        });
     });
 });
 
@@ -181,6 +188,7 @@ Frontend API
  ******************************* */
 
 Route::group(['middleware' => 'throttle:999000,1'], function () {
+    Route::get('global-config', [GlobalConfigController::class, 'getGlobalConfigForWeb'])->name('api.global-config.web');
     Route::get('all-products', [ProductController::class, 'getAllProductsForWeb'])->name('api.all.products.web');
     Route::post('product-single', [ProductController::class, 'getProductByUrl'])->name('api.single.products');
     Route::post('category-products', [ProductController::class, 'getProductsByCategory'])->name('api.category.products');
