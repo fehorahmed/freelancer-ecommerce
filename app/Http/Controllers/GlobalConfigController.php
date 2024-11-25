@@ -60,12 +60,24 @@ class GlobalConfigController extends Controller
 
             // }
             if ($request->hasFile($key) && $request->file($key)->isValid()) {
+                $rules = [
+                    $key           => 'image|max:2048',
+                ];
+                $validation = Validator::make($request->all(), $rules);
+                if ($validation->fails()) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => $validation->errors()->first(),
+                        'errors' => $validation->errors()
+                    ], 422);
+                }
+
                 $file = $value;
 
                 $path = '\images\logo';
                 $dpath = '\images\logo\150';
-                $image_ck = GlobalConfig::where('key',$key)->first();
-                if($image_ck){
+                $image_ck = GlobalConfig::where('key', $key)->first();
+                if ($image_ck) {
                     Storage::disk('public')->delete($path . '\\' . $image_ck->value);
                     Storage::disk('public')->delete($dpath . '\\' . $image_ck->value);
                 }

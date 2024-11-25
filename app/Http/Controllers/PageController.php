@@ -192,4 +192,18 @@ class PageController extends Controller
     {
         //
     }
+    public function apiGetPage($url)
+    {
+        $page = Page::where('url',$url)->first();
+        if($page){
+
+            return new PageResource($page);
+
+        }else{
+            return response()->json([
+                'status' => false,
+                'message' => 'Page not found.',
+            ], 404);
+        }
+    }
 }

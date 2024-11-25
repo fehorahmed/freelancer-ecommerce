@@ -198,6 +198,8 @@ Route::group(['middleware' => 'throttle:999000,1'], function () {
     Route::post('forget-password', [UserController::class, 'apiForgetPassword'])->name('api.forget.password');
     Route::post('reset-password', [UserController::class, 'apiResetPassword'])->name('api.reset.password');
 
+    Route::get('page/{url}', [PageController::class, 'apiGetPage'])->name('api.get.page');
+
 
 
 
