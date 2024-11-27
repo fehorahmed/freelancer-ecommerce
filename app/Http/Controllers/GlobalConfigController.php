@@ -59,40 +59,42 @@ class GlobalConfigController extends Controller
 
 
             // }
-            if ($request->hasFile($key) && $request->file($key)->isValid()) {
-                $rules = [
-                    $key           => 'image|max:2048',
-                ];
-                $validation = Validator::make($request->all(), $rules);
-                if ($validation->fails()) {
-                    return response()->json([
-                        'status' => false,
-                        'message' => $validation->errors()->first(),
-                        'errors' => $validation->errors()
-                    ], 422);
+            if ($key == 'app_logo') {
+                if ($request->hasFile($key)) {
+                    $rules = [
+                        $key           => 'image|max:2048',
+                    ];
+                    $validation = Validator::make($request->all(), $rules);
+                    if ($validation->fails()) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => $validation->errors()->first(),
+                            'errors' => $validation->errors()
+                        ], 422);
+                    }
+
+                    $file = $value;
+
+                    $path = '\images\logo';
+                    $dpath = '\images\logo\150';
+                    $image_ck = GlobalConfig::where('key', $key)->first();
+                    if ($image_ck) {
+                        Storage::disk('public')->delete($path . '\\' . $image_ck->value);
+                        Storage::disk('public')->delete($dpath . '\\' . $image_ck->value);
+                    }
+
+                    $image_name = time() . rand(00, 99) . '.' . $file->getClientOriginalName();
+                    $resize_image = Image::make($file->getRealPath());
+                    $resize_image->resize(100, 100, function ($constraint) {
+                        $constraint->aspectRatio();
+                    });
+
+                    $path1 = Storage::disk('public')->put($path . '\\' . $image_name, File::get($file));
+                    $path2 = Storage::disk('public')->put($dpath . '\\' . $image_name, (string)$resize_image->encode());
+                    $path = $image_name;
+
+                    $this->GlobalConfigUpdate($key, $path);
                 }
-
-                $file = $value;
-
-                $path = '\images\logo';
-                $dpath = '\images\logo\150';
-                $image_ck = GlobalConfig::where('key', $key)->first();
-                if ($image_ck) {
-                    Storage::disk('public')->delete($path . '\\' . $image_ck->value);
-                    Storage::disk('public')->delete($dpath . '\\' . $image_ck->value);
-                }
-
-                $image_name = time() . rand(00, 99) . '.' . $file->getClientOriginalName();
-                $resize_image = Image::make($file->getRealPath());
-                $resize_image->resize(100, 100, function ($constraint) {
-                    $constraint->aspectRatio();
-                });
-
-                $path1 = Storage::disk('public')->put($path . '\\' . $image_name, File::get($file));
-                $path2 = Storage::disk('public')->put($dpath . '\\' . $image_name, (string)$resize_image->encode());
-                $path = $image_name;
-
-                $this->GlobalConfigUpdate($key, $path);
             } else {
                 $this->GlobalConfigUpdate($key, $value);
             }
