@@ -12,6 +12,7 @@ use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductReviewController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\RoomCategoryController;
 use App\Http\Controllers\ShippingChargeController;
@@ -158,6 +159,10 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
             Route::get('/{id}/edit', [PageController::class, 'edit'])->name('pages.edit');
             Route::post('/{id}/edit', [PageController::class, 'update'])->name('pages.update');
         });
+        Route::group(['prefix' => 'review'], function () {
+            Route::get('/list', [ProductReviewController::class, 'index'])->name('review.index');
+            Route::post('/{id}/change-status', [ProductReviewController::class, 'changeStatus'])->name('review.change.status');
+        });
     });
 });
 
@@ -180,6 +185,9 @@ Route::middleware('auth:sanctum', 'ability:user', 'throttle:1000,1')->group(func
         Route::post('place-order', [OrderController::class, 'postOrder'])->name('api.order.place');
         Route::get('orders-history', [OrderController::class, 'getOrderHistory'])->name('api.order.history');
         Route::post('change-password', [UserController::class, 'apiChangePassword'])->name('api.change.password');
+
+        Route::post('product-review', [ProductReviewController::class, 'apiProductReview'])->name('api.product.review');
+
     });
 });
 
@@ -199,8 +207,6 @@ Route::group(['middleware' => 'throttle:999000,1'], function () {
     Route::post('reset-password', [UserController::class, 'apiResetPassword'])->name('api.reset.password');
 
     Route::get('page/{url}', [PageController::class, 'apiGetPage'])->name('api.get.page');
-
-
 
 
 });
