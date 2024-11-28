@@ -24,6 +24,7 @@ use App\Http\Controllers\UserAddressController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\WarrantyController;
+use App\Http\Controllers\WishListController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -188,6 +189,10 @@ Route::middleware('auth:sanctum', 'ability:user', 'throttle:1000,1')->group(func
 
         Route::post('product-review', [ProductReviewController::class, 'apiProductReview'])->name('api.product.review');
 
+        //Wish List
+        Route::get('wish-list', [WishListController::class, 'viewWishList'])->name('api.wishlist.view');
+        Route::post('wish-list-store', [WishListController::class, 'store'])->name('api.wishlist.store');
+        Route::delete('wish-list-delete/{product_id}', [WishListController::class, 'deleteByProductId'])->name('api.wishlist.deletebyproductid');
     });
 });
 
