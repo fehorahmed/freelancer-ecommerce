@@ -32,6 +32,7 @@ class OrderHistoryResource extends JsonResource
             "order_details"=>OrderDetailResource::collection($this->orderDetails),
             "status" => OrderStatus::getOrderStatus($this->id),
             "status_details" => OrderStatusResource::collection($this->orderStatus),
+            "created_at" => $this->created_at,
         ];
     }
 }

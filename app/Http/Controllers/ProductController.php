@@ -681,7 +681,6 @@ class ProductController extends Controller
             });
         }
 
-
         return MultiProductResource::collection($query->where('status', '=', 1)->paginate($perPage));
     }
 

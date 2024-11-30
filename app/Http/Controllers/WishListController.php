@@ -90,10 +90,17 @@ class WishListController extends Controller
         }
     }
 
-    public function viewWishList()
+    public function viewWishList(Request $request)
     {
         $userId = Auth::user()->id;
-        $data = WishList::where('user_id', '=', $userId)->get();
+
+        if ($request->per_page) {
+            $perPage = $request->per_page;
+        } else {
+            $perPage = 10;
+        }
+
+        $data = WishList::where('user_id', '=', $userId)->paginate($perPage);
         return WishListResource::collection($data);
     }
 

@@ -588,4 +588,25 @@ class OrderController extends Controller
             return OrderHistoryResource::collection($data);
         }
     }
+    public function getOrderDetails($id)
+    {
+        $user_id = Auth::user()->id;
+        if ($user_id > 0) {
+            $data = Order::where(['user_id'=> $user_id,'id'=>$id])->first();
+
+            if($data){
+                return response([
+                    'status'=>true,
+                    'data'=> new OrderHistoryResource($data)
+                ]);
+            }else{
+                return response([
+                    'status'=>false,
+                    'message'=> 'Order not found.'
+                ]);
+            }
+
+
+        }
+    }
 }

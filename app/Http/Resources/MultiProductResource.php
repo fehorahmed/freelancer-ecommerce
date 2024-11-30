@@ -4,8 +4,11 @@ namespace App\Http\Resources;
 
 use App\Models\ProductInventory;
 use App\Models\ProductPrice;
+use App\Models\WishList;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class MultiProductResource extends JsonResource
 {
@@ -16,6 +19,17 @@ class MultiProductResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+
+        $user_id = null;
+        $token = $request->bearerToken();
+
+        if ($token) {
+            $accessToken = PersonalAccessToken::findToken($token);
+            if ($accessToken) {
+                $user_id = $accessToken->tokenable->id;
+            }
+        }
+
         return [
             "id" => $this->id,
             "name" => $this->name,
@@ -35,10 +49,11 @@ class MultiProductResource extends JsonResource
             "is_featured" => $this->is_featured,
             "is_apps_only" => $this->is_apps_only,
             "type" => $this->type,
-            'stock' => ProductInventory::getStock($this->id,null),
+            'stock' => ProductInventory::getStock($this->id, null),
             // "price" => new ProductPriceResource($this->productPrice),
-            'regular_price' => ProductPrice::getRegulerPrice($this->id,''),
-            'sell_price' => ProductPrice::getSalePrice($this->id,''),
+            'regular_price' => ProductPrice::getRegulerPrice($this->id, ''),
+            'sell_price' => ProductPrice::getSalePrice($this->id, ''),
+            'wish_list' => $user_id ? WishList::wishListCheckByProduct($this->id,$user_id) : false,
         ];
     }
 }
