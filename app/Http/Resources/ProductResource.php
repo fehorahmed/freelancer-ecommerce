@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use App\Models\ProductImage;
 use App\Models\ProductInventory;
 use App\Models\ProductPrice;
+use App\Models\ProductReview;
 use App\Models\WishList;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -46,22 +47,23 @@ class ProductResource extends JsonResource
             "short_description" => $this->short_description,
             "description" => $this->description,
             "image" => $this->image ? asset('/') . 'storage/images/products/profile/150/' . $this->image : null,
-            "galley" => ProductImageResource::collection(ProductImage::where(['product_id'=>$this->id , 'status'=>1])->get()),
+            "galley" => ProductImageResource::collection(ProductImage::where(['product_id' => $this->id, 'status' => 1])->get()),
             "is_featured" => $this->is_featured,
             "is_apps_only" => $this->is_apps_only,
             "type" => $this->type,
             "status" => $this->status,
-            'stock' => ProductInventory::getStock($this->id,null),
+            'stock' => ProductInventory::getStock($this->id, null),
             // "price" => new ProductPriceResource($this->productPrice),
-            'regular_price' => ProductPrice::getRegulerPrice($this->id,''),
-            'sell_price' => ProductPrice::getSalePrice($this->id,''),
+            'regular_price' => ProductPrice::getRegulerPrice($this->id, ''),
+            'sell_price' => ProductPrice::getSalePrice($this->id, ''),
             "created_by" => $this->created_by,
             "updated_by" => $this->updated_by,
             "meta_title" => $this->meta_title,
             "meta_description" => $this->meta_description,
             "meta_keywords" => $this->meta_keywords,
             "meta_og_description" => $this->meta_og_description,
-            'wish_list' => $user_id ? WishList::wishListCheckByProduct($this->id,$user_id) : false,
+            'wish_list' => $user_id ? WishList::wishListCheckByProduct($this->id, $user_id) : false,
+            'reviews' => ProductReviewResource::collection(ProductReview::where(['product_id' => $this->id, 'status' => 1])->get()),
             "created_at" => $this->created_at,
 
         ];
