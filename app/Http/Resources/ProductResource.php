@@ -5,8 +5,10 @@ namespace App\Http\Resources;
 use App\Models\ProductImage;
 use App\Models\ProductInventory;
 use App\Models\ProductPrice;
+use App\Models\WishList;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class ProductResource extends JsonResource
 {
@@ -17,6 +19,17 @@ class ProductResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+
+        $user_id = null;
+        $token = $request->bearerToken();
+
+        if ($token) {
+            $accessToken = PersonalAccessToken::findToken($token);
+            if ($accessToken) {
+                $user_id = $accessToken->tokenable->id;
+            }
+        }
+
         return [
             "id" => $this->id,
             "name" => $this->name,
@@ -48,8 +61,9 @@ class ProductResource extends JsonResource
             "meta_description" => $this->meta_description,
             "meta_keywords" => $this->meta_keywords,
             "meta_og_description" => $this->meta_og_description,
+            'wish_list' => $user_id ? WishList::wishListCheckByProduct($this->id,$user_id) : false,
             "created_at" => $this->created_at,
-            "updated_at" => $this->updated_at,
+
         ];
     }
 }
