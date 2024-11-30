@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommonController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\GlobalConfigController;
@@ -174,9 +175,13 @@ User API
  ******************************* */
 Route::post('login', [UserController::class, 'apiLogin']);
 Route::post('registration', [UserController::class, 'apiRegistration']);
-
+Route::post('registration', [UserController::class, 'resendVerificationEmail']);
+// 'email-verified',
 Route::middleware('auth:sanctum', 'ability:user', 'throttle:1000,1')->group(function () {
     Route::prefix('user')->group(function () {
+        //Resend Email
+        Route::post('resend-verify-email', [UserController::class, 'resendVerificationEmail']);
+
         Route::get('profile', [AdminController::class, 'profile']);
         Route::post('save-address', [UserAddressController::class, 'store'])->name('api.address.save');
         Route::get('get-address', [UserAddressController::class, 'getAllAddress'])->name('api.address.all');
@@ -213,8 +218,7 @@ Route::group(['middleware' => 'throttle:999000,1'], function () {
     Route::post('reset-password', [UserController::class, 'apiResetPassword'])->name('api.reset.password');
 
     Route::get('page/{url}', [PageController::class, 'apiGetPage'])->name('api.get.page');
-
-
+    Route::post('contact-us', [ContactController::class, 'store'])->name('api.contact-us.store');
 });
 
 

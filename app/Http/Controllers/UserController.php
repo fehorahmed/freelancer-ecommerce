@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserRegistrationRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -74,6 +75,8 @@ class UserController extends Controller
         $user->dob = $request->date_of_birth;
 
         if ($user->save()) {
+
+            event(new Registered($user));
             return response([
                 'status' => true,
                 'message' => 'Registration Success..',
@@ -85,6 +88,36 @@ class UserController extends Controller
             ], 500);
         }
     }
+
+    public function resendVerificationEmail(Request $request)
+    {
+        $rules = [
+            'email' => 'required|email',
+        ];
+
+        $validation = Validator::make($request->all(), $rules);
+        if ($validation->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validation->errors()->first(),
+                'errors' => $validation->errors()
+            ], 422);
+        }
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['status' => false, 'message' => 'User not found.'], 404);
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            return response()->json(['status' => true, 'message' => 'Email already verified.']);
+        }
+
+        $user->sendEmailVerificationNotification();
+
+        return response()->json(['status' => true, 'message' => 'Verification email resent.']);
+    }
     public function apiChangePassword(Request $request)
     {
         $rules = [
@@ -94,7 +127,7 @@ class UserController extends Controller
         ];
 
 
-        if(!Hash::check($request->old_password,auth()->user()->password)){
+        if (!Hash::check($request->old_password, auth()->user()->password)) {
             return response()->json([
                 'status' => false,
                 'message' => 'Old password is not correct.',
@@ -124,7 +157,8 @@ class UserController extends Controller
         }
     }
 
-    public function apiForgetPassword(Request $request){
+    public function apiForgetPassword(Request $request)
+    {
         $rules = [
             'email' => 'required|email|string|max:255',
         ];
@@ -140,8 +174,8 @@ class UserController extends Controller
             ], 422);
         }
 
-        $user = User::where(['email'=>$request->email,'status'=>1])->first();
-        if(!$user){
+        $user = User::where(['email' => $request->email, 'status' => 1])->first();
+        if (!$user) {
             return response()->json([
                 'status' => false,
                 'message' => 'User not found on this email.',
@@ -160,10 +194,10 @@ class UserController extends Controller
         }
 
         return response()->json(['error' => __($status)], 400);
-
     }
 
-    public function apiResetPassword(Request $request){
+    public function apiResetPassword(Request $request)
+    {
         $rules = [
             'email' => 'required|email',
             'token' => 'required',
@@ -178,8 +212,8 @@ class UserController extends Controller
                 'errors' => $validation->errors()
             ], 422);
         }
-          // Reset the password
-          $status = Password::reset(
+        // Reset the password
+        $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user) use ($request) {
                 $user->forceFill([
@@ -195,4 +229,6 @@ class UserController extends Controller
 
         return response()->json(['error' => __($status)], 400);
     }
+
+
 }
