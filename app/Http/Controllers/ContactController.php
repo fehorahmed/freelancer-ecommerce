@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ContactResource;
 use App\Models\Contact;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -11,9 +12,18 @@ class ContactController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if ($request->per_page) {
+            $perPage = $request->per_page;
+        } else {
+            $perPage = 10;
+        }
+        $query = Contact::query();
+        if ($request->search) {
+            $query->where('name', 'LIKE', "%{$request->search}%");
+        }
+        return ContactResource::collection($query->paginate($perPage));
     }
 
     /**

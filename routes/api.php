@@ -165,6 +165,9 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
             Route::get('/list', [ProductReviewController::class, 'index'])->name('review.index');
             Route::post('/{id}/change-status', [ProductReviewController::class, 'changeStatus'])->name('review.change.status');
         });
+        Route::group(['prefix' => 'contact'], function () {
+            Route::get('/list', [ContactController::class, 'index'])->name('contact.index');
+        });
     });
 });
 
