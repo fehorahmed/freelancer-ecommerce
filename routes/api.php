@@ -178,13 +178,16 @@ User API
  ******************************* */
 Route::post('login', [UserController::class, 'apiLogin']);
 Route::post('registration', [UserController::class, 'apiRegistration']);
-Route::post('registration', [UserController::class, 'resendVerificationEmail']);
 // 'email-verified',
 Route::middleware('auth:sanctum', 'ability:user', 'throttle:1000,1')->group(function () {
     Route::prefix('user')->group(function () {
-        //Resend Email
         Route::post('resend-verify-email', [UserController::class, 'resendVerificationEmail']);
+    });
+});
+Route::middleware('auth:sanctum', 'ability:user','email-verified', 'throttle:1000,1')->group(function () {
 
+    Route::prefix('user')->group(function () {
+        //Resend Email
         Route::get('profile', [AdminController::class, 'profile']);
         Route::post('save-address', [UserAddressController::class, 'store'])->name('api.address.save');
         Route::get('get-address', [UserAddressController::class, 'getAllAddress'])->name('api.address.all');
@@ -195,6 +198,7 @@ Route::middleware('auth:sanctum', 'ability:user', 'throttle:1000,1')->group(func
         Route::get('orders-history', [OrderController::class, 'getOrderHistory'])->name('api.order.history');
         Route::get('order/{id}/details', [OrderController::class, 'getOrderDetails'])->name('api.order.details');
         Route::post('change-password', [UserController::class, 'apiChangePassword'])->name('api.change.password');
+        Route::post('profile-update', [UserController::class, 'apiProfileUpdate'])->name('api.profile.update');
 
         Route::post('product-review', [ProductReviewController::class, 'apiProductReview'])->name('api.product.review');
 

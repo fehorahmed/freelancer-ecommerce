@@ -35,11 +35,17 @@ Route::middleware('guest')->group(function () {
         ->name('password.store');
 });
 
-// Route::middleware('auth:sanctum', 'ability:user', 'throttle:1000,1')->group(function () {
+Route::middleware('auth:sanctum', 'ability:user', 'throttle:1000,1')->group(function () {
 
-    Route::get('verify-email/{id}/{hash}', VerifyEmailController::class,'verify');
-    // ->name('verification.verify');
-// });
+    Route::get('verify-email/{id}/{hash}', [VerifyEmailController::class, 'verify'])
+        ->middleware(['throttle:6,1'])
+        ->name('verification.verify');
+    Route::get('verify-email', EmailVerificationPromptController::class)
+        ->name('verification.notice');
+});
+
+
+
 Route::middleware('auth')->group(function () {
     // Route::get('verify-email', EmailVerificationPromptController::class)
     //     ->name('verification.notice');

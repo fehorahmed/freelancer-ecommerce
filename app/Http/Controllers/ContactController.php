@@ -23,7 +23,7 @@ class ContactController extends Controller
         if ($request->search) {
             $query->where('name', 'LIKE', "%{$request->search}%");
         }
-        return ContactResource::collection($query->paginate($perPage));
+        return ContactResource::collection($query->orderBy('id','DESC')->paginate($perPage));
     }
 
     /**

@@ -10,7 +10,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\File;
 
 class UserController extends Controller
 {
@@ -91,20 +94,20 @@ class UserController extends Controller
 
     public function resendVerificationEmail(Request $request)
     {
-        $rules = [
-            'email' => 'required|email',
-        ];
+        // $rules = [
+        //     'email' => 'required|email',
+        // ];
+        // dd(auth()->user()->email);
+        // $validation = Validator::make($request->all(), $rules);
+        // if ($validation->fails()) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'message' => $validation->errors()->first(),
+        //         'errors' => $validation->errors()
+        //     ], 422);
+        // }
 
-        $validation = Validator::make($request->all(), $rules);
-        if ($validation->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => $validation->errors()->first(),
-                'errors' => $validation->errors()
-            ], 422);
-        }
-
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', auth()->user()->email)->first();
 
         if (!$user) {
             return response()->json(['status' => false, 'message' => 'User not found.'], 404);
@@ -231,4 +234,57 @@ class UserController extends Controller
     }
 
 
+    public function apiProfileUpdate(Request $request)
+    {
+        $rules = [
+            'name' => 'required|string|max:255',
+            'picture' => 'nullable|image|max:1024',
+        ];
+        $validation = Validator::make($request->all(), $rules);
+        if ($validation->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validation->errors()->first(),
+                'errors' => $validation->errors()
+            ], 422);
+        }
+
+        $user = User::find(auth()->id());
+        $user->name = $request->name;
+
+        if ($request->hasFile('picture')) {
+            $file = $request->file('picture');
+
+            $path = '\images\user\profile';
+            $dpath = '\images\user\profile\150';
+
+            Storage::disk('public')->delete($path . '\\' . $user->picture);
+            Storage::disk('public')->delete($dpath . '\\' . $user->picture);
+
+            $image_name = time() . rand(00, 99) . '.' . $file->getClientOriginalName();
+
+            $resize_image = Image::make($file->getRealPath());
+            $resize_image->resize(150, 150, function ($constraint) {
+                $constraint->aspectRatio();
+            });
+
+            $path1 = Storage::disk('public')->put($path . '\\' . $image_name, File::get($file));
+            $path2 = Storage::disk('public')->put($dpath . '\\' . $image_name, (string)$resize_image->encode());
+            $dbimg = $image_name;
+            $user->picture = $dbimg;
+        }
+        if($user->save()){
+            return response([
+                'status'=>true,
+                'message'=>'Profile update successfully.'
+            ]);
+        }else{
+            return response([
+                'status'=>false,
+                'message'=>'Something went wrong.'
+            ],404);
+        }
+
+
+    }
 }

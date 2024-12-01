@@ -31,14 +31,14 @@ class VerifyEmailController extends Controller
     public function verify(Request  $request)
     {
         $user = User::findOrFail($request->id);
-        dd('sss');
+
         if (!$user) {
             return response()->json([
                 'status' => false,
                 'message' => 'User not found.',
             ], 404);
         }
-        dd('sss');
+
         if (!hash_equals((string) $request->id, (string) $user->getKey())) {
             return response()->json(['status' => false, 'message' => 'Invalid ID.'], 400);
         }
@@ -50,7 +50,7 @@ class VerifyEmailController extends Controller
         if ($user->hasVerifiedEmail()) {
             return response()->json(['status' => true, 'message' => 'Email already verified.']);
         }
-        dd('sss');
+
         if ($user->markEmailAsVerified()) {
             event(new Verified($user));
         }
