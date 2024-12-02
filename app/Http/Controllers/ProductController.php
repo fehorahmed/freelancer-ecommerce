@@ -57,10 +57,10 @@ class ProductController extends Controller
             'name' => 'required',
             'short_description' => 'required',
             'description' => 'required',
-            // 'weight' => 'required|numeric',
-            // 'length' => 'required|numeric',
-            // 'width' => 'required|numeric',
-            // 'height' => 'required|numeric',
+            'is_featured' => 'required|boolean',
+            'is_new_arrival' => 'required|boolean',
+            'is_top_sale' => 'required|boolean',
+
             'reguler_price' => 'required|numeric',
             'sell_price' => 'required|numeric',
             'sku' => 'required|unique:products,sku',
@@ -108,7 +108,9 @@ class ProductController extends Controller
             $product->short_description = $request->short_description;
             $product->description = $request->description;
             $product->status = $request->status;
-
+            $product->is_featured = $request->is_featured;
+            $product->is_new_arrival = $request->is_new_arrival;
+            $product->is_top_sale = $request->is_top_sale;
             $product->meta_title = $request->meta_title;
             $product->meta_description = $request->meta_description;
             $product->meta_keywords = $request->meta_keywords;
@@ -427,6 +429,9 @@ class ProductController extends Controller
             'unit' => 'required|numeric',
             'image' => 'nullable|mimes:jpg,jpeg,png,webp,gif|max:2000',
             'status' => 'required|boolean',
+            'is_featured' => 'required|boolean',
+            'is_new_arrival' => 'required|boolean',
+            'is_top_sale' => 'required|boolean',
 
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:2000',
@@ -467,6 +472,9 @@ class ProductController extends Controller
             $product->short_description = $request->short_description;
             $product->description = $request->description;
             $product->status = $request->status;
+            $product->is_featured = $request->is_featured;
+            $product->is_new_arrival = $request->is_new_arrival;
+            $product->is_top_sale = $request->is_top_sale;
 
             $product->meta_title = $request->meta_title;
             $product->meta_description = $request->meta_description;
