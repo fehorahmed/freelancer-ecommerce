@@ -38,10 +38,10 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth:sanctum', 'ability:user', 'throttle:1000,1')->group(function () {
 
 
-    Route::get('verify-email', EmailVerificationPromptController::class)
+    Route::get('api/verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice');
 });
-Route::get('verify-email/{id}/{hash}', [VerifyEmailController::class, 'verify'])
+Route::get('api/verify-email/{id}/{hash}', [VerifyEmailController::class, 'verify'])
     ->middleware(['throttle:6,1'])
     ->name('verification.verify');
 
