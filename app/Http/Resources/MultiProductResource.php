@@ -47,6 +47,8 @@ class MultiProductResource extends JsonResource
             "description" => $this->description,
             "image" => $this->image ? asset('/') . 'storage/images/products/profile/150/' . $this->image : null,
             "is_featured" => $this->is_featured,
+            "is_new_arrival" => $this->is_new_arrival,
+            "is_top_sale" => $this->is_top_sale,
             "is_apps_only" => $this->is_apps_only,
             "type" => $this->type,
             'stock' => ProductInventory::getStock($this->id, null),

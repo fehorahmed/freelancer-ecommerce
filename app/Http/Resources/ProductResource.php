@@ -49,6 +49,8 @@ class ProductResource extends JsonResource
             "image" => $this->image ? asset('/') . 'storage/images/products/profile/150/' . $this->image : null,
             "galley" => ProductImageResource::collection(ProductImage::where(['product_id' => $this->id, 'status' => 1])->get()),
             "is_featured" => $this->is_featured,
+            "is_new_arrival" => $this->is_new_arrival,
+            "is_top_sale" => $this->is_top_sale,
             "is_apps_only" => $this->is_apps_only,
             "type" => $this->type,
             "status" => $this->status,
