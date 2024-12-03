@@ -28,6 +28,26 @@ class BlogController extends Controller
         }
         return BlogResource::collection($query->paginate($perPage));
     }
+    public function apiGetBlogs(Request $request)
+    {
+        if ($request->per_page) {
+            $perPage = $request->per_page;
+        } else {
+            $perPage = 10;
+        }
+        $query = Blog::where('status',1);
+        if ($request->search) {
+            $query->where('title', 'LIKE', "%{$request->search}%");
+        }
+        return BlogResource::collection($query->orderBy('serial','DESC')->paginate($perPage));
+    }
+    public function apiGetBlogDetails($id)
+    {
+
+        $blog = Blog::find($id);
+
+        return new BlogResource($blog);
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -48,6 +68,7 @@ class BlogController extends Controller
             'description' => 'required|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:1024',
             'status' => 'required|boolean',
+            'serial' => 'required|numeric|min:0',
         ];
 
         $validation = Validator::make($request->all(), $rules);
@@ -64,6 +85,7 @@ class BlogController extends Controller
         $data->short_description = $request->short_description;
         $data->description = $request->description;
         $data->status = $request->status;
+        $data->serial = $request->serial;
         $data->created_by = auth()->id();
         if ($request->hasFile('image')) {
             $file = $request->file('image');
@@ -136,6 +158,7 @@ class BlogController extends Controller
             'description' => 'required|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:1024',
             'status' => 'required|boolean',
+            'serial' => 'required|numeric|min:0',
         ];
 
         $validation = Validator::make($request->all(), $rules);
@@ -152,6 +175,7 @@ class BlogController extends Controller
         $data->short_description = $request->short_description;
         $data->description = $request->description;
         $data->status = $request->status;
+        $data->serial = $request->serial;
         $data->created_by = auth()->id();
         if ($request->hasFile('image')) {
             $file = $request->file('image');

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->text('short_description');
             $table->longText('description');
+            $table->unsignedInteger('serial')->default(0);
             $table->boolean('status');
             $table->foreignId('created_by');
             $table->foreign('created_by')->on('admins')->references('id');
