@@ -239,7 +239,7 @@ Route::group(['middleware' => 'throttle:999000,1'], function () {
     Route::post('contact-us', [ContactController::class, 'store'])->name('api.contact-us.store');
 
     Route::get('blogs', [BlogController::class, 'apiGetBlogs'])->name('api.get.blogs');
-    Route::post('blog/{id}/details', [BlogController::class, 'apiGetBlogDetails'])->name('api.get.blog.details');
+    Route::get('blog/{id}/details', [BlogController::class, 'apiGetBlogDetails'])->name('api.get.blog.details');
 });
 
 
