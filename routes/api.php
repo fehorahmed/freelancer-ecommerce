@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommonController;
@@ -161,6 +162,12 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
             Route::get('/{id}/edit', [PageController::class, 'edit'])->name('pages.edit');
             Route::post('/{id}/edit', [PageController::class, 'update'])->name('pages.update');
         });
+        Route::group(['prefix' => 'blog'], function () {
+            Route::get('/', [BlogController::class, 'index'])->name('blog.index');
+            Route::post('/create', [BlogController::class, 'store'])->name('blog.store');
+            Route::get('/{id}/edit', [BlogController::class, 'edit'])->name('blog.edit');
+            Route::post('/{id}/edit', [BlogController::class, 'update'])->name('blog.update');
+        });
         Route::group(['prefix' => 'review'], function () {
             Route::get('/list', [ProductReviewController::class, 'index'])->name('review.index');
             Route::post('/{id}/change-status', [ProductReviewController::class, 'changeStatus'])->name('review.change.status');
@@ -168,6 +175,7 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
         Route::group(['prefix' => 'contact'], function () {
             Route::get('/list', [ContactController::class, 'index'])->name('contact.index');
         });
+
     });
 });
 
