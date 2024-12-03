@@ -64,8 +64,8 @@ class BlogController extends Controller
     {
         $rules = [
             'title' => 'required|string|max:255|unique:blogs,title',
-            'short_description' => 'required|string|max:255',
-            'description' => 'required|string|max:255',
+            'short_description' => 'required|string|max:2000',
+            'description' => 'required|string|max:40000',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:1024',
             'status' => 'required|boolean',
             'serial' => 'required|numeric|min:0',
@@ -154,8 +154,8 @@ class BlogController extends Controller
     {
         $rules = [
             'title' => 'required|string|max:255|unique:blogs,title,' . $id,
-            'short_description' => 'required|string|max:255',
-            'description' => 'required|string|max:255',
+            'short_description' => 'required|string|max:2000',
+            'description' => 'required|string|max:40000',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:1024',
             'status' => 'required|boolean',
             'serial' => 'required|numeric|min:0',
