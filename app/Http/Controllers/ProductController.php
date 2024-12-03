@@ -691,6 +691,132 @@ class ProductController extends Controller
 
         return MultiProductResource::collection($query->where('status', '=', 1)->paginate($perPage));
     }
+    public function getFeatureProductsForWeb(Request $request)
+    {
+        $rules = [
+            'name' => 'nullable|string',
+            'min_price' => 'nullable|numeric',
+            'max_price' => 'nullable|numeric',
+            'brand' => 'nullable|numeric',
+            'category' => 'nullable|numeric',
+        ];
+
+        $validation = Validator::make($request->all(), $rules);
+        if ($validation->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validation->errors()->first(),
+                'errors' => $validation->errors()
+            ], 422);
+        }
+        if ($request->per_page) {
+            $perPage = $request->per_page;
+        } else {
+            $perPage = 20;
+        }
+        $query = Product::where('is_featured',1);
+        if ($request->search) {
+            $query->where('name', 'LIKE', "%{$request->search}%");
+        }
+        if ($request->brand) {
+            $query->where('brand_id', $request->brand);
+        }
+        if ($request->category) {
+            $query->where('category_id', $request->category);
+        }
+
+        if (isset($request->min_price) && isset($request->max_price)) {
+            $query->whereHas('productPrice', function (Builder $query) use ($request) {
+                $query->whereBetween('sell_price', [$request->min_price, $request->max_price]);
+            });
+        }
+
+        return MultiProductResource::collection($query->where('status', '=', 1)->paginate($perPage));
+    }
+    public function getNewArrivalProductsForWeb(Request $request)
+    {
+        $rules = [
+            'name' => 'nullable|string',
+            'min_price' => 'nullable|numeric',
+            'max_price' => 'nullable|numeric',
+            'brand' => 'nullable|numeric',
+            'category' => 'nullable|numeric',
+        ];
+
+        $validation = Validator::make($request->all(), $rules);
+        if ($validation->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validation->errors()->first(),
+                'errors' => $validation->errors()
+            ], 422);
+        }
+        if ($request->per_page) {
+            $perPage = $request->per_page;
+        } else {
+            $perPage = 20;
+        }
+        $query = Product::where('is_new_arrival',1);
+        if ($request->search) {
+            $query->where('name', 'LIKE', "%{$request->search}%");
+        }
+        if ($request->brand) {
+            $query->where('brand_id', $request->brand);
+        }
+        if ($request->category) {
+            $query->where('category_id', $request->category);
+        }
+
+        if (isset($request->min_price) && isset($request->max_price)) {
+            $query->whereHas('productPrice', function (Builder $query) use ($request) {
+                $query->whereBetween('sell_price', [$request->min_price, $request->max_price]);
+            });
+        }
+
+        return MultiProductResource::collection($query->where('status', '=', 1)->paginate($perPage));
+    }
+    public function getTopSaleProductsForWeb(Request $request)
+    {
+        $rules = [
+            'name' => 'nullable|string',
+            'min_price' => 'nullable|numeric',
+            'max_price' => 'nullable|numeric',
+            'brand' => 'nullable|numeric',
+            'category' => 'nullable|numeric',
+        ];
+
+        $validation = Validator::make($request->all(), $rules);
+        if ($validation->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validation->errors()->first(),
+                'errors' => $validation->errors()
+            ], 422);
+        }
+        if ($request->per_page) {
+            $perPage = $request->per_page;
+        } else {
+            $perPage = 20;
+        }
+        $query = Product::where('is_top_sale',1);
+        if ($request->search) {
+            $query->where('name', 'LIKE', "%{$request->search}%");
+        }
+        if ($request->brand) {
+            $query->where('brand_id', $request->brand);
+        }
+        if ($request->category) {
+            $query->where('category_id', $request->category);
+        }
+
+        if (isset($request->min_price) && isset($request->max_price)) {
+            $query->whereHas('productPrice', function (Builder $query) use ($request) {
+                $query->whereBetween('sell_price', [$request->min_price, $request->max_price]);
+            });
+        }
+
+        return MultiProductResource::collection($query->where('status', '=', 1)->paginate($perPage));
+    }
 
     public function getProductByUrl(Request $request)
     {

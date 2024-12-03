@@ -216,6 +216,9 @@ Frontend API
 Route::group(['middleware' => 'throttle:999000,1'], function () {
     Route::get('global-config', [GlobalConfigController::class, 'getGlobalConfigForWeb'])->name('api.global-config.web');
     Route::get('all-products', [ProductController::class, 'getAllProductsForWeb'])->name('api.all.products.web');
+    Route::get('feature-products', [ProductController::class, 'getFeatureProductsForWeb'])->name('api.feature.products.web');
+    Route::get('new-arrival-products', [ProductController::class, 'getNewArrivalProductsForWeb'])->name('api.new-arrival.products.web');
+    Route::get('top-sale-products', [ProductController::class, 'getTopSaleProductsForWeb'])->name('api.top-sale.products.web');
     Route::post('product-single', [ProductController::class, 'getProductByUrl'])->name('api.single.products');
     Route::post('category-products', [ProductController::class, 'getProductsByCategory'])->name('api.category.products');
     Route::post('brand-products', [ProductController::class, 'getProductsByBrand'])->name('api.brand.products');
