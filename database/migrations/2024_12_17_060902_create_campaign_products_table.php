@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('campaign_id');
             $table->foreign('campaign_id')->references('id')->on('campaigns');
             $table->foreignId('product_attribute_id')->nullable();
-            $table->foreign('product_attribute_id')->references('id')->on('products_attributes');
+            $table->foreign('product_attribute_id')->references('id')->on('product_attributes');
             $table->double('reguler_price')->nullable();
             $table->double('sell_price');
             $table->date('start_date')->nullable();
