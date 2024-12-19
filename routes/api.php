@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\ContactController;
@@ -98,6 +99,13 @@ Route::middleware('auth:sanctum', 'ability:admin', 'throttle:1000,1')->group(fun
             });
         });
         Route::group(['prefix' => 'campain'], function () {
+
+            Route::get('/list', [CampaignController::class, 'index'])->name('campain.campain.index');
+            Route::post('/create', [CampaignController::class, 'store'])->name('campain.campain.store');
+            Route::get('/{id}/edit', [CampaignController::class, 'edit'])->name('campain.campain.edit');
+            Route::post('/{id}/edit', [CampaignController::class, 'update'])->name('campain.campain.update');
+            Route::delete('/{id}/delete', [CampaignController::class, 'destroy'])->name('campain.campain.delete');
+
             Route::group(['prefix' => 'vouchers'], function () {
                 Route::get('/', [VoucherController::class, 'index'])->name('campain.vouchers.index');
                 Route::post('/create', [VoucherController::class, 'store'])->name('campain.vouchers.store');
