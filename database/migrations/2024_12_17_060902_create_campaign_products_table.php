@@ -32,6 +32,7 @@ return new class extends Migration
             $table->foreign('created_by')->references('id')->on('admins');
             $table->foreignId('updated_by')->nullable();
             $table->foreign('updated_by')->references('id')->on('admins');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

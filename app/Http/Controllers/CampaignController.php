@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\CampainResource;
 use App\Models\Campaign;
+use App\Models\CampaignProduct;
+use App\Models\Product;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -62,11 +64,22 @@ class CampaignController extends Controller
                 'errors' => $validation->errors()
             ], 422);
         }
-        dd($request->all());
+        foreach ($request->product_id as $product) {
+
+            $product_ck = Product::find($product['id']);
+            // dd($product['id'], $product_ck);
+            if (!$product_ck) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Product not found.',
+                ], 404);
+            }
+        }
+        // dd($request->all());
         $campain = new Campaign();
         $campain->title = $request->title;
 
-        $url = Str::slug($request->name, '-');
+        $url = Str::slug($request->title, '-');
         $finalURL = Str::replace('&', 'and', $url);
 
         $campain->url = $finalURL;
@@ -97,7 +110,32 @@ class CampaignController extends Controller
             $path2 = Storage::disk('public')->put($dpath . '\\' . $image_name, (string)$resize_image->encode());
             $campain->banner = $image_name;
         }
+        $campain->created_by = auth()->id();
+        if ($campain->save()) {
 
+
+            foreach ($request->product_id as $product) {
+
+                $data = new CampaignProduct();
+                $data->product_id = $product['id'];
+                $data->campaign_id = $campain->id;
+                $data->sell_price = $product['sell_price'];
+                $data->created_by = $campain->created_by;
+                $data->save();
+            }
+
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Campaign save successfully.'
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+
+            ], 404);
+        }
     }
 
     /**
@@ -111,9 +149,20 @@ class CampaignController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Campaign $campaign)
+    public function edit($id)
     {
-        //
+        $data = Campaign::find($id);
+        if($data){
+            return response()->json([
+                'status' => true,
+                'data' => new CampainResource($data)
+            ]);
+        }else{
+            return response()->json([
+                'status' => false,
+                'message' => 'Brand not found.'
+            ],404);
+        }
     }
 
     /**

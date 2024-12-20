@@ -14,6 +14,21 @@ class CampainResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            "id" => $this->id,
+            "title" => $this->title,
+            "banner" => $this->banner,
+            "description" => $this->description,
+            "url" => $this->url,
+            "start_date" => $this->start_date,
+            "start_time" => $this->start_time,
+            "end_date" => $this->end_date,
+            "end_time" => $this->end_time,
+            "status" => $this->status,
+            "is_apps_only" => $this->is_apps_only,
+            "created_by" => $this->created_by,
+            "updated_by" => $this->updated_by,
+            "campain_products" => CampaignProductResource::collection($this->campaignProducts),
+        ];
     }
 }
