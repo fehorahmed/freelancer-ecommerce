@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CampainResource extends JsonResource
+class CampaignDetailResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,7 +18,7 @@ class CampainResource extends JsonResource
             "id" => $this->id,
             "title" => $this->title,
             "banner" => $this->banner,
-            "banner" => $this->banner ? asset('/') . 'storage/images/campaign/banner/mobile/' . $this->banner : null,
+            "banner" => $this->banner ? asset('/') . 'storage/images/campaign/banner/mobile/' . $this->logo : null,
             "description" => $this->description,
             "url" => $this->url,
             "start_date" => $this->start_date,
@@ -29,7 +29,7 @@ class CampainResource extends JsonResource
             "is_apps_only" => $this->is_apps_only,
             "created_by" => $this->created_by,
             "updated_by" => $this->updated_by,
-            // "campain_products" => CampaignProductResource::collection($this->campaignProducts),
+            "campain_products" => CampaignProductResource::collection($this->campaignProducts),
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CampaignDetailResource;
 use App\Http\Resources\CampainResource;
 use App\Models\Campaign;
 use App\Models\CampaignProduct;
@@ -53,6 +54,8 @@ class CampaignController extends Controller
             'end_date' => 'required|date',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i',
+            'product_id.*.id' => 'required|numeric',
+            'product_id.*.sell_price' => 'required|numeric',
 
         ];
 
@@ -160,7 +163,7 @@ class CampaignController extends Controller
         }else{
             return response()->json([
                 'status' => false,
-                'message' => 'Brand not found.'
+                'message' => 'Campaign not found.'
             ],404);
         }
     }
@@ -168,16 +171,152 @@ class CampaignController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Campaign $campaign)
+    public function update(Request $request, $id)
     {
-        //
+        $rules = [
+            'title' => 'required|string|max:255|unique:campaigns,title,'.$id,
+            'banner' => 'required|image|max:1024',
+            'description' => 'required|string|max:255',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i',
+            'product_id.*.id' => 'required|numeric',
+            'product_id.*.sell_price' => 'required|numeric',
+
+        ];
+
+        $validation = Validator::make($request->all(), $rules);
+        if ($validation->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validation->errors()->first(),
+                'errors' => $validation->errors()
+            ], 422);
+        }
+        foreach ($request->product_id as $product) {
+
+            $product_ck = Product::find($product['id']);
+            // dd($product['id'], $product_ck);
+            if (!$product_ck) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Product not found.',
+                ], 404);
+            }
+        }
+        // dd($request->all());
+        $campain =  Campaign::find($id);
+        $campain->title = $request->title;
+
+        $url = Str::slug($request->title, '-');
+        $finalURL = Str::replace('&', 'and', $url);
+
+        $campain->url = $finalURL;
+        $campain->description = $request->description;
+        $campain->banner = $request->banner;
+        $campain->start_date = $request->start_date;
+        $campain->end_date = $request->end_date;
+        $campain->start_time = $request->start_time;
+        $campain->end_time = $request->end_time;
+
+        if ($request->hasFile('banner')) {
+            $file = $request->file('banner');
+
+            $path = '\images\campaign\banner';
+            $dpath = '\images\campaign\banner\mobile';
+
+            Storage::disk('public')->delete($path . '\\' . $campain->banner);
+            Storage::disk('public')->delete($dpath . '\\' . $campain->banner);
+
+            $image_name = time() . rand(00, 99) . '.' . $file->getClientOriginalName();
+
+            $resize_image = Image::make($file->getRealPath());
+            $resize_image->resize(250, 250, function ($constraint) {
+                $constraint->aspectRatio();
+            });
+
+            $path1 = Storage::disk('public')->put($path . '\\' . $image_name, File::get($file));
+            $path2 = Storage::disk('public')->put($dpath . '\\' . $image_name, (string)$resize_image->encode());
+            $campain->banner = $image_name;
+        }
+        $campain->created_by = auth()->id();
+
+        $delete_products= CampaignProduct::where('campaign_id',$campain->id)->delete();
+        if ($campain->save()) {
+            foreach ($request->product_id as $product) {
+                $data = new CampaignProduct();
+                $data->product_id = $product['id'];
+                $data->campaign_id = $campain->id;
+                $data->sell_price = $product['sell_price'];
+                $data->created_by = $campain->created_by;
+                $data->save();
+            }
+
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Campaign updated successfully.'
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+
+            ], 404);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Campaign $campaign)
+    public function destroy($id)
     {
-        //
+        $data = Campaign::find($id);
+        if($data){
+            $data->delete();
+            return response()->json([
+                'status' => true,
+                'message' => 'Delete success.'
+            ]);
+        }else{
+            return response()->json([
+                'status' => false,
+                'message' => 'Campaign not found.'
+            ],404);
+        }
+    }
+    public function getCampaigns()
+    {
+        $data = Campaign::all();
+        if($data){
+
+            return response()->json([
+                'status' => true,
+                'data' => CampainResource::collection($data)
+            ]);
+        }else{
+            return response()->json([
+                'status' => false,
+                'message' => 'Campaign not found.'
+            ],404);
+        }
+    }
+    public function getCampaignByUrl($url)
+    {
+        $data = Campaign::where('url',$url)->first();
+        // dd($data);
+        if($data){
+
+            return response()->json([
+                'status' => true,
+                'data' =>new CampaignDetailResource($data)
+            ]);
+        }else{
+            return response()->json([
+                'status' => false,
+                'message' => 'Campaign not found.'
+            ],404);
+        }
     }
 }

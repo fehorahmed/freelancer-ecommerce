@@ -248,6 +248,9 @@ Route::group(['middleware' => 'throttle:999000,1'], function () {
 
     Route::get('blogs', [BlogController::class, 'apiGetBlogs'])->name('api.get.blogs');
     Route::get('blog/{id}/details', [BlogController::class, 'apiGetBlogDetails'])->name('api.get.blog.details');
+
+    Route::get('campaigns', [CampaignController::class, 'getCampaigns'])->name('api.get.campain');
+    Route::get('campaign-detail/{url}', [CampaignController::class, 'getCampaignByUrl'])->name('api.get.campain.by.url');
 });
 
 
